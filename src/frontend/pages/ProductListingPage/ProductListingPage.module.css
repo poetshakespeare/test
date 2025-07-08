@@ -1,0 +1,32 @@
+.productsAndFilterContainer {
+  min-height: calc(100vh - 5rem);
+  display: grid;
+  padding: 0;
+  transition: var(--transition);
+}
+
+@media screen and (min-width: 768px) {
+  .productsAndFilterContainer {
+    width: 90vw;
+    max-width: 1280px;
+    margin: 0 auto;
+    grid-template-columns: 350px 1fr;
+    position: static;
+    gap: 0 1rem;
+  }
+
+  .productsAndFilterContainer::before {
+    display: none;
+  }
+
+  .productsAndFilterContainer > .redirectToTopLink {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .productsAndFilterContainer {
+    gap: 0 6rem;
+    grid-template-columns: 200px 1fr;
+  }
+}

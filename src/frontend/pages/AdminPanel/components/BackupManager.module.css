@@ -1,0 +1,212 @@
+.backupManager {
+  max-width: 100%;
+}
+
+.backupManager h2 {
+  color: var(--primary-600);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.infoSection {
+  background: var(--grey-50);
+  padding: 2rem;
+  border-radius: var(--borderRadius);
+  margin-bottom: 2rem;
+  border-left: 4px solid var(--primary-500);
+}
+
+.infoSection h3 {
+  color: var(--primary-600);
+  margin-bottom: 1.5rem;
+}
+
+.infoList {
+  display: grid;
+  gap: 1rem;
+}
+
+.infoItem {
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--grey-200);
+}
+
+.infoItem strong {
+  color: var(--primary-600);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.infoItem ul {
+  margin: 0.5rem 0 0 1rem;
+  color: var(--grey-600);
+}
+
+.infoItem code {
+  background: var(--grey-100);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.exportSection {
+  margin-bottom: 3rem;
+}
+
+.exportCard {
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+  border-left: 4px solid var(--green-medium);
+}
+
+.cardHeader {
+  background: linear-gradient(135deg, var(--green-medium), #0f5132);
+  color: var(--white);
+  padding: 1.5rem;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.cardContent {
+  padding: 2rem;
+}
+
+.cardContent p {
+  color: var(--grey-600);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.changesSummary {
+  background: var(--primary-50);
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  margin-bottom: 2rem;
+  border: 2px solid var(--primary-200);
+}
+
+.changesSummary h4 {
+  color: var(--primary-600);
+  margin-bottom: 1rem;
+}
+
+.changesSummary ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.changesSummary li {
+  margin-bottom: 0.5rem;
+  color: var(--grey-700);
+  font-weight: 500;
+}
+
+.exportButton {
+  width: 100%;
+  padding: 1.25rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--green-medium), #0f5132);
+  border: none;
+  transition: var(--transition);
+}
+
+.exportButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0f5132, var(--green-medium));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(15, 81, 50, 0.3);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.instructionsSection {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-2);
+}
+
+.instructionsSection h3 {
+  color: var(--primary-600);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.stepsList {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--grey-50);
+  border-radius: var(--borderRadius);
+  border-left: 4px solid var(--primary-500);
+}
+
+.stepNumber {
+  background: var(--primary-500);
+  color: var(--white);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.stepContent {
+  flex: 1;
+}
+
+.stepContent strong {
+  color: var(--primary-600);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+@media screen and (max-width: 768px) {
+  .infoSection {
+    padding: 1rem;
+  }
+
+  .cardContent {
+    padding: 1rem;
+  }
+
+  .exportButton {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .step {
+    padding: 1rem;
+  }
+
+  .stepNumber {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.9rem;
+  }
+}

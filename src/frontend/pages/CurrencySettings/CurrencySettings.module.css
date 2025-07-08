@@ -1,0 +1,234 @@
+.currencySettings {
+  padding: 2rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--primary-200);
+}
+
+.header h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary-600);
+  font-size: 1.5rem;
+}
+
+.header p {
+  margin: 0;
+  color: var(--grey-600);
+  font-size: 1rem;
+}
+
+.currentCurrency {
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  margin-bottom: 2rem;
+  border: 2px solid var(--primary-200);
+  text-align: center;
+}
+
+.currentCurrency h4 {
+  margin: 0 0 1rem 0;
+  color: var(--primary-700);
+}
+
+.currentCurrencyDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.flag {
+  font-size: 2rem;
+}
+
+.currencyName {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-700);
+}
+
+.currencyCode {
+  font-size: 1rem;
+  color: var(--grey-600);
+  font-weight: 500;
+}
+
+.exchangeRate {
+  background: var(--white);
+  padding: 0.75rem;
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--primary-300);
+}
+
+.exchangeRate span {
+  color: var(--primary-600);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.currencyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.currencyCard {
+  background: var(--white);
+  border: 2px solid var(--grey-200);
+  border-radius: var(--borderRadius);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: var(--shadow-2);
+}
+
+.currencyCard:hover {
+  border-color: var(--primary-400);
+  box-shadow: var(--shadow-3);
+  transform: translateY(-2px);
+}
+
+.currencyCard.selected {
+  border-color: var(--primary-500);
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.currencyFlag {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.currencyInfo h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary-600);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.currencyInfo p {
+  margin: 0 0 0.75rem 0;
+  color: var(--grey-600);
+  font-size: 0.95rem;
+}
+
+.symbol {
+  display: inline-block;
+  background: var(--primary-500);
+  color: var(--white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.rate {
+  font-size: 0.85rem;
+  color: var(--grey-500);
+  font-weight: 500;
+  background: var(--grey-100);
+  padding: 0.5rem;
+  border-radius: var(--borderRadius);
+}
+
+.selectedIndicator {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: var(--primary-500);
+  color: var(--white);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.infoSection {
+  background: var(--grey-50);
+  padding: 2rem;
+  border-radius: var(--borderRadius);
+  border-left: 4px solid var(--primary-500);
+}
+
+.infoSection h4 {
+  margin: 0 0 1.5rem 0;
+  color: var(--primary-600);
+}
+
+.infoList {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.infoItem {
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--grey-200);
+}
+
+.infoItem strong {
+  color: var(--primary-600);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.disclaimer {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--grey-600);
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--grey-200);
+}
+
+@media screen and (max-width: 768px) {
+  .currencySettings {
+    padding: 1rem;
+  }
+
+  .currencyGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .currentCurrencyDisplay {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .flag {
+    font-size: 1.5rem;
+  }
+
+  .currencyFlag {
+    font-size: 2rem;
+  }
+
+  .infoSection {
+    padding: 1rem;
+  }
+}

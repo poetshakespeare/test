@@ -1,0 +1,107 @@
+.filtersContainer {
+  width: 250px;
+  height: calc(100vh - var(--nav-height) + 1rem);
+  overflow-y: auto;
+  background: var(--white);
+  padding: 1rem 1.5rem;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-2);
+  position: fixed;
+  top: 6rem;
+  left: -31rem;
+  transition: var(--transition);
+  z-index: 100;
+  padding-bottom: 3rem;
+}
+
+.filtersContainer div:first-child {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.filtersContainer div:first-child svg {
+  color: var(--red-dark);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.filtersContainer div:first-child svg:hover {
+  transform: scale(1.2);
+  color: var(--red-medium);
+}
+
+.filtersContainer.showFiltersContainer {
+  left: 0rem;
+}
+
+.filtersContainer input {
+  cursor: pointer;
+}
+
+.filtersContainer header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filtersContainer header > p {
+  font-weight: bold;
+  letter-spacing: var(--letterSpacing);
+  margin: 1rem 0;
+}
+
+.filtersContainer legend {
+  color: var(--primary-500);
+  font-size: 1rem;
+  font-family: 600;
+  padding: 0 0.5rem;
+  padding-top: 0.5rem;
+  letter-spacing: var(--letterSpacing);
+}
+
+.filtersContainer fieldset {
+  padding: 0.25rem 0.5rem;
+  margin-top: 0.15rem;
+  border-color: var(--primary-500);
+}
+.filtersContainer label {
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.ratingFieldset label > svg {
+  margin-bottom: -0.1rem;
+}
+
+.filtersContainer select,
+option {
+  padding: 0.25rem;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.flexSpaceBtwn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0;
+  color: var(--grey-500);
+}
+
+@media screen and (min-width: 768px) {
+  .filtersContainer {
+    position: sticky;
+    top: calc(var(--nav-height) - 1rem);
+    width: 350px;
+    margin-left: -2rem;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .filtersContainer {
+    width: 310px;
+    margin-left: -4rem;
+  }
+}
