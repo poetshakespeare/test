@@ -95,7 +95,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       window.removeEventListener('forceStoreUpdate', handleConfigUpdate);
       window.removeEventListener('adminConfigChanged', handleConfigUpdate);
     };
-  }, [cart]); // Dependencia del carrito para reaccionar a cambios
+  }, [cart, hasShippingAvailableInCart]); // Dependencia del carrito para reaccionar a cambios
 
   const defaultState = {
     username: '',
@@ -126,7 +126,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
         serviceType: SERVICE_TYPES.PICKUP
       }));
     }
-  }, [canUseHomeDelivery, isEditing]);
+  }, [canUseHomeDelivery, isEditing, inputs.serviceType]);
 
   const [mobileValidation, setMobileValidation] = useState({
     isValid: true,

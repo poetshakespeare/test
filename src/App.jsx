@@ -5,7 +5,7 @@ import { Suspense, lazy } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
-import { Footer, Loader, PrivateRoute } from './frontend/components';
+import { Loader, PrivateRoute } from './frontend/components';
 
 import {
   ErrorPage,
