@@ -639,7 +639,7 @@ const ProductManager = () => {
                 <span>Los cupones requieren que todos los productos del carrito sean elegibles</span>
               </div>
             </div>
-          </div>
+
             {/* Opción de Producto Destacado */}
             <div 
               className={`${styles.modernOptionCard} ${styles.featuredCard} ${formData.featured ? styles.active : ''}`}

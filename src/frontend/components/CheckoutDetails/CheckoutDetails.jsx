@@ -29,7 +29,7 @@ const CheckoutDetails = ({
   } = useAllProductsContext();
 
   const { storeConfig } = useConfigContext();
-  const { formatPriceWithCode, getCurrentCurrency, convertFromCUP } = useCurrencyContext();
+  const { formatPriceWithCode, getCurrentCurrency } = useCurrencyContext();
   const STORE_WHATSAPP = storeConfig.storeInfo?.whatsappNumber || '+53 54690878';
   const SANTIAGO_ZONES = storeConfig.zones || [];
 
