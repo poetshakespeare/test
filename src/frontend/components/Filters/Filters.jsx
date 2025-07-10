@@ -63,7 +63,7 @@ const Filters = ({
     toastHandler(ToastType.Success, 'Filtros limpiados exitosamente');
   };
 
-  // FUNCIÓN MEJORADA PARA MANEJAR EL SLIDER DE PRECIOS
+  // FUNCIÓN MEJORADA PARA MANEJAR EL SLIDER DE PRECIOS CON MEJOR UX
   const handlePriceSliderChange = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
@@ -71,16 +71,18 @@ const Filters = ({
 
     let adjustedValue = [...newValue];
 
-    // Asegurar distancia mínima entre los valores
+    // Asegurar distancia mínima entre los valores (más pequeña para mejor UX)
+    const minDistance = Math.min(MIN_DISTANCE_BETWEEN_THUMBS, (maxPriceFromContext - minPriceFromContext) * 0.01);
+    
     if (activeThumb === 0) {
       adjustedValue[0] = Math.min(
         newValue[0],
-        adjustedValue[1] - MIN_DISTANCE_BETWEEN_THUMBS
+        adjustedValue[1] - minDistance
       );
     } else {
       adjustedValue[1] = Math.max(
         newValue[1],
-        adjustedValue[0] + MIN_DISTANCE_BETWEEN_THUMBS
+        adjustedValue[0] + minDistance
       );
     }
 
@@ -95,9 +97,40 @@ const Filters = ({
     );
   };
 
-  // CALCULAR VALORES PARA EL SLIDER
-  const priceStep = Math.max(1, Math.floor((maxPriceFromContext - minPriceFromContext) / 100));
+  // CALCULAR VALORES PARA EL SLIDER CON MEJOR DISTRIBUCIÓN
+  const priceRange = maxPriceFromContext - minPriceFromContext;
+  const priceStep = (() => {
+    if (priceRange <= 1000) return 10; // Pasos de 10 para rangos pequeños
+    if (priceRange <= 10000) return 100; // Pasos de 100 para rangos medianos
+    if (priceRange <= 100000) return 500; // Pasos de 500 para rangos grandes
+    return 1000; // Pasos de 1000 para rangos muy grandes
+  })();
+
   const midPriceValue = midValue(minPriceFromContext, maxPriceFromContext);
+
+  // CALCULAR MARCAS DEL SLIDER DE FORMA INTELIGENTE
+  const getSliderMarks = () => {
+    const marks = [
+      {
+        value: minPriceFromContext,
+        label: formatPrice(minPriceFromContext),
+      },
+      {
+        value: maxPriceFromContext,
+        label: formatPrice(maxPriceFromContext),
+      }
+    ];
+
+    // Solo agregar marca del medio si hay suficiente espacio
+    if (priceRange > 2000) {
+      marks.splice(1, 0, {
+        value: midPriceValue,
+        label: formatPrice(midPriceValue),
+      });
+    }
+
+    return marks;
+  };
 
   return (
     <form
@@ -124,49 +157,101 @@ const Filters = ({
         
         <div className={styles.priceInfo}>
           <p>
-            <strong>Rango actual:</strong> {formatPrice(priceFromContext[0])} - {formatPrice(priceFromContext[1])}
+            <strong>Rango seleccionado:</strong> {formatPrice(priceFromContext[0])} - {formatPrice(priceFromContext[1])}
           </p>
           <p>
             <strong>Productos disponibles:</strong> {formatPrice(minPriceFromContext)} - {formatPrice(maxPriceFromContext)}
           </p>
+          <p className={styles.priceHint}>
+            💡 Arrastra los controles para ajustar el rango de precios
+          </p>
         </div>
 
-        <Slider
-          name={FILTER_INPUT_TYPE.PRICE}
-          getAriaLabel={() => 'Rango de precios'}
-          value={priceFromContext}
-          onChange={handlePriceSliderChange}
-          valueLabelDisplay='auto'
-          valueLabelFormat={(value) => formatPrice(value)}
-          min={minPriceFromContext}
-          max={maxPriceFromContext}
-          step={priceStep}
-          disableSwap
-          style={{
-            color: 'var(--primary-500)',
-            width: '85%',
-            margin: '1rem auto',
-          }}
-          marks={[
-            {
-              value: minPriceFromContext,
-              label: formatPrice(minPriceFromContext),
-            },
-            {
-              value: midPriceValue,
-              label: formatPrice(midPriceValue),
-            },
-            {
-              value: maxPriceFromContext,
-              label: formatPrice(maxPriceFromContext),
-            },
-          ]}
-        />
+        <div className={styles.sliderContainer}>
+          <Slider
+            name={FILTER_INPUT_TYPE.PRICE}
+            getAriaLabel={() => 'Rango de precios'}
+            value={priceFromContext}
+            onChange={handlePriceSliderChange}
+            valueLabelDisplay='auto'
+            valueLabelFormat={(value) => formatPrice(value)}
+            min={minPriceFromContext}
+            max={maxPriceFromContext}
+            step={priceStep}
+            disableSwap
+            style={{
+              color: 'var(--primary-500)',
+              width: '100%',
+              margin: '1.5rem 0',
+            }}
+            marks={getSliderMarks()}
+            sx={{
+              '& .MuiSlider-thumb': {
+                width: 20,
+                height: 20,
+                '&:hover, &.Mui-focusVisible': {
+                  boxShadow: '0px 0px 0px 8px rgba(59, 130, 246, 0.16)',
+                },
+              },
+              '& .MuiSlider-track': {
+                height: 6,
+              },
+              '& .MuiSlider-rail': {
+                height: 6,
+                opacity: 0.3,
+              },
+              '& .MuiSlider-mark': {
+                backgroundColor: 'var(--primary-300)',
+                height: 8,
+                width: 2,
+              },
+              '& .MuiSlider-markLabel': {
+                fontSize: '0.75rem',
+                color: 'var(--grey-600)',
+                fontWeight: 500,
+              },
+              '& .MuiSlider-valueLabel': {
+                backgroundColor: 'var(--primary-600)',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+              },
+            }}
+          />
+        </div>
 
-        <div className={styles.flexSpaceBtwn}>
-          <span>{formatPrice(minPriceFromContext)}</span>
-          <span>{formatPrice(midPriceValue)}</span>
-          <span>{formatPrice(maxPriceFromContext)}</span>
+        <div className={styles.priceInputs}>
+          <div className={styles.priceInputGroup}>
+            <label>Precio mínimo:</label>
+            <input
+              type="number"
+              value={priceFromContext[0]}
+              onChange={(e) => {
+                const newMin = Math.max(minPriceFromContext, parseInt(e.target.value) || minPriceFromContext);
+                const newMax = Math.max(newMin + priceStep, priceFromContext[1]);
+                handlePriceSliderChange(null, [newMin, newMax], 0);
+              }}
+              className={styles.priceInput}
+              min={minPriceFromContext}
+              max={priceFromContext[1] - priceStep}
+              step={priceStep}
+            />
+          </div>
+          <div className={styles.priceInputGroup}>
+            <label>Precio máximo:</label>
+            <input
+              type="number"
+              value={priceFromContext[1]}
+              onChange={(e) => {
+                const newMax = Math.min(maxPriceFromContext, parseInt(e.target.value) || maxPriceFromContext);
+                const newMin = Math.min(newMax - priceStep, priceFromContext[0]);
+                handlePriceSliderChange(null, [newMin, newMax], 1);
+              }}
+              className={styles.priceInput}
+              min={priceFromContext[0] + priceStep}
+              max={maxPriceFromContext}
+              step={priceStep}
+            />
+          </div>
         </div>
       </fieldset>
 

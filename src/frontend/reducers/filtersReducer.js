@@ -23,7 +23,7 @@ export const initialFiltersState = {
   displayableProductsLength: 0,
 };
 
-// FUNCIÓN MEJORADA PARA CALCULAR RANGOS DE PRECIO DINÁMICOS
+// FUNCIÓN MEJORADA PARA CALCULAR RANGOS DE PRECIO DINÁMICOS Y AMIGABLES
 const calculatePriceRange = (products) => {
   if (!products || products.length === 0) {
     return { minPrice: 0, maxPrice: 100000 };
@@ -33,12 +33,31 @@ const calculatePriceRange = (products) => {
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
   
-  // Agregar un pequeño margen para mejor UX
-  const margin = (maxPrice - minPrice) * 0.05; // 5% de margen
-  const adjustedMin = Math.max(0, Math.floor(minPrice - margin));
-  const adjustedMax = Math.ceil(maxPrice + margin);
+  console.log(`📊 Precios originales: ${minPrice} - ${maxPrice} CUP`);
   
-  console.log(`📊 Rango de precios calculado: ${adjustedMin} - ${adjustedMax} CUP`);
+  // Función para redondear hacia abajo a números "amigables"
+  const roundDownToFriendly = (value) => {
+    if (value <= 100) return Math.floor(value / 10) * 10; // Redondear a decenas
+    if (value <= 1000) return Math.floor(value / 100) * 100; // Redondear a centenas
+    if (value <= 10000) return Math.floor(value / 1000) * 1000; // Redondear a miles
+    if (value <= 100000) return Math.floor(value / 5000) * 5000; // Redondear a 5 miles
+    return Math.floor(value / 10000) * 10000; // Redondear a 10 miles
+  };
+
+  // Función para redondear hacia arriba a números "amigables"
+  const roundUpToFriendly = (value) => {
+    if (value <= 100) return Math.ceil(value / 10) * 10; // Redondear a decenas
+    if (value <= 1000) return Math.ceil(value / 100) * 100; // Redondear a centenas
+    if (value <= 10000) return Math.ceil(value / 1000) * 1000; // Redondear a miles
+    if (value <= 100000) return Math.ceil(value / 5000) * 5000; // Redondear a 5 miles
+    return Math.ceil(value / 10000) * 10000; // Redondear a 10 miles
+  };
+
+  // Aplicar redondeo amigable
+  const adjustedMin = Math.max(0, roundDownToFriendly(minPrice));
+  const adjustedMax = roundUpToFriendly(maxPrice);
+  
+  console.log(`📊 Rango de precios ajustado: ${adjustedMin} - ${adjustedMax} CUP`);
   
   return {
     minPrice: adjustedMin,
@@ -51,7 +70,7 @@ export const filtersReducer = (state, action) => {
     case FILTERS_ACTION.GET_PRODUCTS_FROM_PRODUCT_CONTEXT:
       const allProductsCloned = structuredClone(action.payload?.products);
       
-      // CÁLCULO DINÁMICO DE RANGOS DE PRECIO MEJORADO
+      // CÁLCULO DINÁMICO DE RANGOS DE PRECIO MEJORADO Y AMIGABLE
       const { minPrice, maxPrice } = calculatePriceRange(allProductsCloned);
 
       const filteredProducts = givePaginatedList(allProductsCloned);

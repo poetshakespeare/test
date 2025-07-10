@@ -82,31 +82,72 @@ option {
   cursor: pointer;
 }
 
-.flexSpaceBtwn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0;
-  color: var(--grey-500);
-  font-size: 0.8rem;
-}
-
 .priceInfo {
   background: var(--primary-50);
-  padding: 0.75rem;
+  padding: 1rem;
   border-radius: var(--borderRadius);
   margin-bottom: 1rem;
-  border: 1px solid var(--primary-200);
+  border: 2px solid var(--primary-200);
 }
 
 .priceInfo p {
-  margin: 0.25rem 0;
+  margin: 0.5rem 0;
   font-size: 0.85rem;
   color: var(--primary-700);
 }
 
 .priceInfo strong {
   color: var(--primary-600);
+}
+
+.priceHint {
+  color: var(--primary-500) !important;
+  font-style: italic;
+  font-size: 0.8rem !important;
+  margin-top: 0.75rem !important;
+}
+
+.sliderContainer {
+  padding: 0 0.5rem;
+  margin: 1rem 0;
+}
+
+.priceInputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.priceInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.priceInputGroup label {
+  font-size: 0.8rem;
+  color: var(--grey-600);
+  font-weight: 500;
+}
+
+.priceInput {
+  padding: 0.5rem;
+  border: 2px solid var(--grey-200);
+  border-radius: var(--borderRadius);
+  font-size: 0.85rem;
+  transition: var(--transition);
+  background: var(--white);
+}
+
+.priceInput:focus {
+  border-color: var(--primary-500);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.priceInput:hover {
+  border-color: var(--primary-300);
 }
 
 .noOptions {
@@ -126,10 +167,19 @@ option {
   }
 
   .priceInfo {
-    padding: 1rem;
+    padding: 1.25rem;
   }
 
   .priceInfo p {
+    font-size: 0.9rem;
+  }
+
+  .priceInputs {
+    gap: 1rem;
+  }
+
+  .priceInput {
+    padding: 0.6rem;
     font-size: 0.9rem;
   }
 }

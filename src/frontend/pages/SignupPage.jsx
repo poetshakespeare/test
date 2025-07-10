@@ -7,11 +7,94 @@ import {
 } from '../components';
 import { useFormInput, useNavigateIfRegistered } from '../hooks';
 import { setIntoLocalStorage, toastHandler } from '../utils/utils';
-import { ToastType, LOCAL_STORAGE_KEYS, EMAIL_PROVIDERS, validateEmailDomain } from '../constants/constants';
+import { ToastType, LOCAL_STORAGE_KEYS } from '../constants/constants';
 import { useState, useEffect } from 'react';
 import { signupService } from '../Services/services';
 import { useAuthContext } from '../contexts/AuthContextProvider';
 import styles from './SignupPage.module.css';
+
+// Proveedores de email soportados
+const EMAIL_PROVIDERS = {
+  GMAIL: {
+    name: 'Gmail',
+    domains: ['gmail.com', 'googlemail.com'],
+    icon: '📧',
+    color: '#ea4335',
+    authUrl: 'https://accounts.google.com/oauth/authorize',
+  },
+  OUTLOOK: {
+    name: 'Outlook',
+    domains: ['outlook.com', 'hotmail.com', 'live.com', 'msn.com'],
+    icon: '📨',
+    color: '#0078d4',
+    authUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+  },
+  YAHOO: {
+    name: 'Yahoo! Mail',
+    domains: ['yahoo.com', 'yahoo.es', 'ymail.com', 'rocketmail.com'],
+    icon: '📮',
+    color: '#6001d2',
+    authUrl: 'https://api.login.yahoo.com/oauth2/request_auth',
+  },
+  APPLE: {
+    name: 'iCloud Mail',
+    domains: ['icloud.com', 'me.com', 'mac.com'],
+    icon: '📧',
+    color: '#000000',
+    authUrl: 'https://appleid.apple.com/auth/authorize',
+  },
+  PROTONMAIL: {
+    name: 'ProtonMail',
+    domains: ['protonmail.com', 'proton.me', 'pm.me'],
+    icon: '🔒',
+    color: '#6d4aff',
+    authUrl: null,
+  },
+  AOL: {
+    name: 'AOL Mail',
+    domains: ['aol.com', 'aim.com'],
+    icon: '📬',
+    color: '#ff0b00',
+    authUrl: 'https://api.login.aol.com/oauth2/request_auth',
+  },
+  FASTMAIL: {
+    name: 'Fastmail',
+    domains: ['fastmail.com', 'fastmail.fm'],
+    icon: '⚡',
+    color: '#2e5c8a',
+    authUrl: null,
+  },
+  ZOHO: {
+    name: 'Zoho Mail',
+    domains: ['zoho.com', 'zohomail.com'],
+    icon: '📧',
+    color: '#e42527',
+    authUrl: 'https://accounts.zoho.com/oauth/v2/auth',
+  },
+};
+
+// Función para validar dominio de email
+const validateEmailDomain = (email) => {
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (!domain) return null;
+
+  for (const [providerKey, provider] of Object.entries(EMAIL_PROVIDERS)) {
+    if (provider.domains.includes(domain)) {
+      return {
+        provider: providerKey,
+        ...provider,
+      };
+    }
+  }
+
+  return {
+    provider: 'OTHER',
+    name: 'Otro proveedor',
+    icon: '📧',
+    color: '#666666',
+    authUrl: null,
+  };
+};
 
 const SignupPage = () => {
   const signupPageLocation = useLocation();

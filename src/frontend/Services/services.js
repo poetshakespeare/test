@@ -50,7 +50,7 @@ export const getAllProductsCategoriesService = async () => {
 export const getProductsOnSearch = async ({ query }) => {
   const res = await axios.get(`/api/products/search?query=${query}`);
 
-  return res.data.products.models;
+  return res.data.products;
 };
 
 export const getSingleProductService = async (productID) => {

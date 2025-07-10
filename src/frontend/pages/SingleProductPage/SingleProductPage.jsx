@@ -185,7 +185,9 @@ const SingleProductPage = () => {
 
         <div className={styles.row}>
           <span>Disponibilidad:</span>
-          <p>{inStock ? 'En Stock' : 'Agotado'}</p>
+          <p className={!inStock ? styles.outOfStockText : ''}>
+            {inStock ? 'En Stock' : 'AGOTADO'}
+          </p>
         </div>
 
         <div className={styles.row}>

@@ -26,6 +26,11 @@
 
 ▶ Features:
 
+1. 📱 **Optimización Móvil Avanzada**:
+   1. Zoom desactivado en dispositivos Android e iOS
+   1. Prevención de zoom accidental en inputs y formularios
+   1. Experiencia táctil optimizada para móviles
+
 1. Error Page 💀
 1. Easter Egg on the footer of the app (Includes Music) 😉
 1. Authentication:
@@ -47,6 +52,12 @@
 1. 💲 Payment Gateway Integration 
 1. Fully Responsive
 
+1. 🎨 **Efectos Visuales Modernos**:
+   1. Animación avanzada para productos agotados
+   1. Efectos de pulso y brillo en elementos "AGOTADO"
+   1. Importación dinámica de iconos react-icons/ai
+   1. Sistema de iconos flexible y extensible
+
 ## **Built with -**
 
 - React JS
@@ -56,6 +67,9 @@
 - Mockbee as mockbackend
 - React Icons
 - Razorpay payment gateway
+- Sistema de iconos dinámicos (react-icons/ai)
+- Animaciones CSS avanzadas
+- Optimización móvil completa
 
 ## **Screenshots :**
 
