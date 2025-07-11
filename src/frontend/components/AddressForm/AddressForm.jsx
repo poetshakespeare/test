@@ -9,7 +9,6 @@ import Price from '../Price';
 import styles from './AddressForm.module.css';
 import {
   toastHandler,
-  validateEmptyTextInput,
 } from '../../utils/utils';
 
 const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
@@ -17,7 +16,6 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
     useAllProductsContext();
 
   const { storeConfig } = useConfigContext();
-  const { formatPrice } = useCurrencyContext();
   const SANTIAGO_ZONES = storeConfig.zones || [];
 
   const isEditing = !!isEditingAndData;
@@ -62,6 +60,41 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
 
   // EFECTO PARA ACTUALIZAR EL ESTADO CUANDO CAMBIE EL CARRITO O LA CONFIGURACIÓN
   useEffect(() => {
+    // FUNCIÓN MEJORADA PARA VERIFICAR ENVÍO DISPONIBLE CON SINCRONIZACIÓN EN TIEMPO REAL
+    const hasShippingAvailableInCart = () => {
+      // 1. Obtener productos actualizados desde localStorage (configuración del admin)
+      const savedConfig = localStorage.getItem('adminStoreConfig');
+      let adminProducts = [];
+      
+      if (savedConfig) {
+        try {
+          const parsedConfig = JSON.parse(savedConfig);
+          adminProducts = parsedConfig.products || [];
+        } catch (error) {
+          console.error('Error al cargar productos del admin:', error);
+        }
+      }
+
+      // 2. Verificar cada producto en el carrito
+      return cart.some(cartItem => {
+        // Extraer el ID del producto (sin el color)
+        const productId = cartItem._id.split('#')[0] || cartItem._id;
+        
+        // Buscar el producto en la configuración del admin (datos más actualizados)
+        const adminProduct = adminProducts.find(p => p._id === productId);
+        
+        // Si encontramos el producto en la configuración del admin, usar esos datos
+        if (adminProduct) {
+          console.log(`🔍 Producto ${adminProduct.name}: envío disponible = ${adminProduct.isShippingAvailable}`);
+          return adminProduct.isShippingAvailable === true;
+        }
+        
+        // Si no está en la configuración del admin, usar los datos del carrito
+        console.log(`⚠️ Producto ${cartItem.name}: usando datos del carrito = ${cartItem.isShippingAvailable}`);
+        return cartItem.isShippingAvailable === true;
+      });
+    };
+
     const updateShippingAvailability = () => {
       const hasShipping = hasShippingAvailableInCart();
       console.log(`🚚 Actualización de envío disponible: ${hasShipping}`);
@@ -126,7 +159,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
         serviceType: SERVICE_TYPES.PICKUP
       }));
     }
-  }, [canUseHomeDelivery, isEditing]);
+  }, [canUseHomeDelivery, isEditing, inputs.serviceType]);
 
   const [mobileValidation, setMobileValidation] = useState({
     isValid: true,
