@@ -86,152 +86,263 @@ const CheckoutDetails = ({
     return PRODUCT_CATEGORY_ICONS[normalizedCategory] || PRODUCT_CATEGORY_ICONS.default;
   };
 
-  // FUNCIÓN MEJORADA PARA DETECTAR DISPOSITIVOS Y SISTEMAS OPERATIVOS
+  // FUNCIÓN UNIVERSAL PARA DETECTAR DISPOSITIVOS Y SISTEMAS OPERATIVOS
   const detectDevice = () => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const platform = navigator.platform || '';
     
-    // Detectar iOS (iPhone, iPad, iPod)
+    // Detectar iOS (iPhone, iPad, iPod, Safari en iOS)
     const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
     
-    // Detectar macOS
+    // Detectar macOS (Safari, Chrome, Firefox en Mac)
     const isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/.test(userAgent);
     
-    // Detectar Android
+    // Detectar Android (Chrome, Firefox, Samsung Internet, etc.)
     const isAndroid = /Android/.test(userAgent);
     
-    // Detectar Windows
+    // Detectar Windows (Chrome, Edge, Firefox en Windows)
     const isWindows = /Windows/.test(userAgent);
     
-    // Detectar si es móvil en general
-    const isMobile = /Mobi|Android/i.test(userAgent) || isIOS;
+    // Detectar Linux (Chrome, Firefox en Linux)
+    const isLinux = /Linux/.test(userAgent) && !isAndroid;
     
-    // Detectar si tiene WhatsApp instalado (aproximación)
-    const hasWhatsApp = isMobile;
+    // Detectar si es móvil/tablet en general
+    const isMobile = /Mobi|Android/i.test(userAgent) || isIOS;
+    const isTablet = /iPad/.test(userAgent) || 
+      (isAndroid && !/Mobile/.test(userAgent)) ||
+      (window.innerWidth >= 768 && window.innerWidth <= 1024);
+    
+    // Detectar navegador específico
+    let browser = 'unknown';
+    if (/Chrome/.test(userAgent) && !/Edge/.test(userAgent)) {
+      browser = 'chrome';
+    } else if (/Safari/.test(userAgent) && !/Chrome/.test(userAgent)) {
+      browser = 'safari';
+    } else if (/Firefox/.test(userAgent)) {
+      browser = 'firefox';
+    } else if (/Edge/.test(userAgent)) {
+      browser = 'edge';
+    } else if (/Opera/.test(userAgent)) {
+      browser = 'opera';
+    }
+    
+    // Detectar capacidades del dispositivo
+    const hasWhatsApp = isMobile || isTablet;
+    const canOpenApps = isMobile || isTablet;
     
     return {
       isIOS,
       isMacOS,
       isAndroid,
       isWindows,
+      isLinux,
       isMobile,
+      isTablet,
       hasWhatsApp,
-      isAppleDevice: isIOS || isMacOS
+      canOpenApps,
+      browser,
+      isAppleDevice: isIOS || isMacOS,
+      isDesktop: !isMobile && !isTablet
     };
   };
 
-  // FUNCIÓN MEJORADA PARA GENERAR URL DE WHATSAPP COMPATIBLE CON TODOS LOS DISPOSITIVOS
+  // FUNCIÓN UNIVERSAL PARA GENERAR URLS DE WHATSAPP PARA TODOS LOS DISPOSITIVOS Y NAVEGADORES
   const generateWhatsAppURL = (message, phoneNumber) => {
     const device = detectDevice();
     const cleanPhone = phoneNumber.replace(/[^\d+]/g, '');
     const encodedMessage = encodeURIComponent(message);
     
-    console.log('🔍 Dispositivo detectado:', device);
-    console.log('📱 Número limpio:', cleanPhone);
+    console.log('🔍 Dispositivo detectado:', {
+      sistema: device.isIOS ? 'iOS' : device.isAndroid ? 'Android' : device.isMacOS ? 'macOS' : device.isWindows ? 'Windows' : device.isLinux ? 'Linux' : 'Desconocido',
+      navegador: device.browser,
+      tipo: device.isMobile ? 'Móvil' : device.isTablet ? 'Tablet' : 'Escritorio'
+    });
     
-    // Para dispositivos iOS (iPhone, iPad)
-    if (device.isIOS) {
-      // Intentar múltiples métodos para iOS
-      const iosUrls = [
-        `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`,
-        `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
-        `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
-      ];
-      
-      console.log('📱 URLs para iOS generadas:', iosUrls);
-      return iosUrls;
-    }
-    
-    // Para macOS (Safari, Chrome en Mac)
-    if (device.isMacOS) {
-      const macUrls = [
-        `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`,
-        `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
-        `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`
-      ];
-      
-      console.log('💻 URLs para macOS generadas:', macUrls);
-      return macUrls;
-    }
-    
-    // Para Android
-    if (device.isAndroid) {
-      const androidUrls = [
-        `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
-        `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`,
-        `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
-      ];
-      
-      console.log('🤖 URLs para Android generadas:', androidUrls);
-      return androidUrls;
-    }
-    
-    // Para Windows y otros sistemas
-    const defaultUrls = [
+    // URLs universales que funcionan en todos los dispositivos y navegadores
+    const universalUrls = [
+      // URL principal de WhatsApp Web/App (funciona en todos los dispositivos)
       `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
-      `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`,
-      `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
+      
+      // URL de la API oficial de WhatsApp (respaldo)
+      `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`,
+      
+      // URL scheme para aplicaciones nativas (móviles y tablets)
+      `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`,
+      
+      // WhatsApp Web específico para escritorio
+      `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
     ];
     
-    console.log('🖥️ URLs por defecto generadas:', defaultUrls);
-    return defaultUrls;
+    // Ordenar URLs según el dispositivo para optimizar la experiencia
+    if (device.isIOS) {
+      // iOS: Priorizar app nativa, luego web
+      return [
+        `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`,
+        `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
+        `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`,
+        `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
+      ];
+    }
+    
+    if (device.isAndroid) {
+      // Android: Priorizar app nativa, luego web
+      return [
+        `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`,
+        `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
+        `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`,
+        `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
+      ];
+    }
+    
+    if (device.isMacOS) {
+      // macOS: Priorizar WhatsApp Web, luego app si está instalada
+      return [
+        `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`,
+        `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
+        `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`,
+        `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
+      ];
+    }
+    
+    if (device.isWindows || device.isLinux) {
+      // Windows/Linux: Priorizar WhatsApp Web y aplicación de escritorio
+      return [
+        `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`,
+        `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
+        `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`,
+        `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
+      ];
+    }
+    
+    // Dispositivos desconocidos: usar URLs universales
+    return [
+      `https://wa.me/${cleanPhone}?text=${encodedMessage}`,
+      `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`,
+      `whatsapp://send?phone=${cleanPhone}&text=${encodedMessage}`,
+      `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
+    ];
   };
 
-  // FUNCIÓN MEJORADA PARA INTENTAR ABRIR WHATSAPP CON MÚLTIPLES MÉTODOS
+  // FUNCIÓN UNIVERSAL PARA ABRIR WHATSAPP EN CUALQUIER DISPOSITIVO Y NAVEGADOR
   const tryOpenWhatsApp = async (urls, orderNumber) => {
     const device = detectDevice();
+    let success = false;
     
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i];
-      console.log(`🔄 Intentando método ${i + 1}/${urls.length}:`, url);
+      console.log(`🔄 Intentando método ${i + 1}/${urls.length} en ${device.browser}:`, url.substring(0, 50) + '...');
       
       try {
-        // Para dispositivos iOS, usar un enfoque especial
-        if (device.isIOS && i === 0) {
-          // Primer intento: URL scheme de WhatsApp
+        // Método 1: URL scheme para apps nativas (móviles y tablets)
+        if ((device.isMobile || device.isTablet) && url.startsWith('whatsapp://')) {
+          // Crear iframe invisible para iOS y algunos Android
           const iframe = document.createElement('iframe');
           iframe.style.display = 'none';
+          iframe.style.width = '1px';
+          iframe.style.height = '1px';
           iframe.src = url;
           document.body.appendChild(iframe);
           
-          // Limpiar después de un tiempo
+          // Limpiar iframe después de intentar abrir
           setTimeout(() => {
-            document.body.removeChild(iframe);
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
           }, 2000);
           
-          // Esperar un poco para ver si funciona
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          // También intentar con window.location como respaldo
+          setTimeout(() => {
+            if (!success) {
+              window.location.href = url;
+            }
+          }, 500);
           
-          // Si llegamos aquí, probablemente funcionó
-          console.log('✅ Método iOS iframe exitoso');
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          console.log('✅ Método URL scheme intentado');
           return true;
         }
         
-        // Para todos los dispositivos: intentar abrir en nueva ventana/pestaña
+        // Método 2: Abrir en nueva ventana/pestaña (funciona en todos los navegadores)
         const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
         
         if (newWindow) {
-          console.log('✅ Ventana abierta exitosamente');
+          console.log('✅ Nueva ventana/pestaña abierta exitosamente');
+          success = true;
           
-          // Para dispositivos móviles, cerrar la ventana después de un tiempo
-          if (device.isMobile) {
+          // Para móviles y tablets, cerrar la ventana después de un tiempo
+          if (device.isMobile || device.isTablet) {
             setTimeout(() => {
               try {
-                newWindow.close();
+                if (newWindow && !newWindow.closed) {
+                  newWindow.close();
+                }
               } catch (e) {
-                console.log('ℹ️ No se pudo cerrar la ventana automáticamente');
+                // Ignorar errores de cierre de ventana
               }
-            }, 3000);
+            }, 2000);
           }
           
           return true;
         }
         
-        console.log('⚠️ No se pudo abrir ventana, intentando siguiente método...');
+        // Método 3: Redirección directa (último recurso)
+        if (i === urls.length - 1) {
+          console.log('🔄 Último intento: redirección directa');
+          window.location.href = url;
+          return true;
+        }
         
       } catch (error) {
-        console.log(`❌ Error en método ${i + 1}:`, error);
+        console.log(`❌ Error en método ${i + 1}:`, error.message);
         
-        // Si no es el último intento, continuar
+        // Si es el último intento y falló, intentar redirección directa
+        if (i === urls.length - 1) {
+          try {
+            console.log('🔄 Último recurso: redirección directa');
+            window.location.href = urls[0]; // Usar la primera URL como respaldo
+            return true;
+          } catch (finalError) {
+            console.log('❌ Error en último recurso:', finalError.message);
+          }
+        }
+      }
+      
+      // Pausa entre intentos para evitar bloqueos del navegador
+      if (i < urls.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+    }
+    
+    // Si todos los métodos fallaron, mostrar instrucciones manuales
+    return false;
+  };
+
+  // FUNCIÓN PARA MOSTRAR INSTRUCCIONES MANUALES SEGÚN EL DISPOSITIVO
+  const showManualInstructions = (device, phoneNumber, orderNumber) => {
+    let instructions = '';
+    
+    if (device.isMobile || device.isTablet) {
+      if (device.isIOS) {
+        instructions = `📱 Para iOS: Abre WhatsApp manualmente y busca el contacto ${phoneNumber}, luego envía el número de pedido #${orderNumber}`;
+      } else if (device.isAndroid) {
+        instructions = `🤖 Para Android: Abre WhatsApp y contacta a ${phoneNumber} con el pedido #${orderNumber}`;
+      } else {
+        instructions = `📱 Abre WhatsApp en tu dispositivo y contacta a ${phoneNumber} con el pedido #${orderNumber}`;
+      }
+    } else {
+      if (device.isMacOS) {
+        instructions = `💻 Para Mac: Abre WhatsApp Web en Safari/Chrome o la app de WhatsApp si la tienes instalada. Contacta a ${phoneNumber}`;
+      } else if (device.isWindows) {
+        instructions = `🖥️ Para Windows: Abre WhatsApp Web en tu navegador o la aplicación de WhatsApp. Contacta a ${phoneNumber}`;
+      } else if (device.isLinux) {
+        instructions = `🐧 Para Linux: Abre WhatsApp Web en tu navegador. Contacta a ${phoneNumber}`;
+      } else {
+        instructions = `💻 Abre WhatsApp Web en tu navegador y contacta a ${phoneNumber} con el pedido #${orderNumber}`;
+      }
+    }
+    
+    return instructions;
+  };
         if (i < urls.length - 1) {
           console.log('🔄 Intentando siguiente método...');
           continue;
@@ -254,9 +365,12 @@ const CheckoutDetails = ({
     const currency = getCurrentCurrency();
     const device = detectDevice();
     
-    console.log('🚀 Iniciando envío a WhatsApp...');
-    console.log('📱 Dispositivo:', device);
-    console.log('📞 Número de WhatsApp:', STORE_WHATSAPP);
+    console.log('🚀 Iniciando envío a WhatsApp universal...');
+    console.log('📱 Dispositivo:', {
+      sistema: device.isIOS ? 'iOS' : device.isAndroid ? 'Android' : device.isMacOS ? 'macOS' : device.isWindows ? 'Windows' : device.isLinux ? 'Linux' : 'Desconocido',
+      navegador: device.browser,
+      tipo: device.isMobile ? 'Móvil' : device.isTablet ? 'Tablet' : 'Escritorio'
+    });
     
     let message = `🛒 *NUEVO PEDIDO #${orderNumber}*\n\n`;
     message += `---------------------------------------------------------------\n`;
@@ -352,30 +466,24 @@ const CheckoutDetails = ({
     // Generar URLs según el dispositivo
     const whatsappUrls = generateWhatsAppURL(message, STORE_WHATSAPP);
     
-    // Mostrar notificación específica según el dispositivo
-    if (device.isAppleDevice) {
-      toastHandler(ToastType.Info, `📱 Abriendo WhatsApp en dispositivo Apple...`);
-    } else if (device.isAndroid) {
-      toastHandler(ToastType.Info, `🤖 Abriendo WhatsApp en Android...`);
-    } else {
-      toastHandler(ToastType.Info, `💻 Abriendo WhatsApp Web...`);
-    }
+    // Mostrar notificación universal
+    const deviceType = device.isMobile ? 'móvil' : device.isTablet ? 'tablet' : 'escritorio';
+    const systemName = device.isIOS ? 'iOS' : device.isAndroid ? 'Android' : device.isMacOS ? 'macOS' : device.isWindows ? 'Windows' : device.isLinux ? 'Linux' : 'tu dispositivo';
     
-    // Intentar abrir WhatsApp con múltiples métodos
+    toastHandler(ToastType.Info, `📱 Abriendo WhatsApp en ${systemName} (${deviceType})...`);
+    
+    // Intentar abrir WhatsApp con múltiples métodos universales
     const success = await tryOpenWhatsApp(whatsappUrls, orderNumber);
     
     if (success) {
-      console.log('✅ WhatsApp abierto exitosamente');
+      console.log('✅ WhatsApp abierto exitosamente en', systemName);
       toastHandler(ToastType.Success, `✅ Pedido #${orderNumber} enviado a WhatsApp`);
     } else {
-      console.log('❌ No se pudo abrir WhatsApp automáticamente');
+      console.log('❌ No se pudo abrir WhatsApp automáticamente en', systemName);
       
-      // Fallback: mostrar información manual
-      const fallbackMessage = device.isAppleDevice 
-        ? `📱 Por favor, abre WhatsApp manualmente y envía un mensaje a ${STORE_WHATSAPP} con el número de pedido #${orderNumber}`
-        : `💻 Por favor, abre WhatsApp Web o la aplicación y contacta a ${STORE_WHATSAPP} con el pedido #${orderNumber}`;
-      
-      toastHandler(ToastType.Warn, fallbackMessage);
+      // Mostrar instrucciones específicas según el dispositivo
+      const instructions = showManualInstructions(device, STORE_WHATSAPP, orderNumber);
+      toastHandler(ToastType.Warn, instructions);
       
       // Copiar número al portapapeles como ayuda adicional
       try {
@@ -383,6 +491,8 @@ const CheckoutDetails = ({
         toastHandler(ToastType.Info, `📋 Número de WhatsApp copiado: ${STORE_WHATSAPP}`);
       } catch (error) {
         console.log('No se pudo copiar al portapapeles:', error);
+        // Mostrar el número en una notificación adicional
+        toastHandler(ToastType.Info, `📞 Número de WhatsApp: ${STORE_WHATSAPP}`);
       }
     }
     
