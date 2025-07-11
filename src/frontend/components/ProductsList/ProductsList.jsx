@@ -8,7 +8,6 @@ import {
 } from '../../constants/constants';
 import SkeletonProductCard from '../ProductCard/SkeletonProductCard';
 import { RiFilter2Fill } from 'react-icons/ri';
-import { DynamicIcon } from '..';
 
 const ProductsList = ({
   handleFilterToggle,

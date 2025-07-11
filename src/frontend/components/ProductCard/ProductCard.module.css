@@ -14,7 +14,7 @@
 }
 
 .disabledProduct::before {
-  content: 'AGOTADO';
+  content: 'Agotado';
   position: absolute;
   top: 0;
   left: 0;
@@ -23,44 +23,13 @@
   background: var(--overlay-bcg);
   z-index: 2;
   cursor: not-allowed;
+  color: var(--white);
   letter-spacing: var(--letterSpacing);
   font-size: 1.25rem;
   display: grid;
   place-items: center;
   border-radius: var(--borderRadius);
   font-weight: 600;
-  
-  /* Efecto moderno solo en la palabra AGOTADO */
-  color: #ff4444;
-  text-shadow: 
-    0 0 5px rgba(255, 68, 68, 0.8),
-    0 0 10px rgba(255, 68, 68, 0.6),
-    0 0 15px rgba(255, 68, 68, 0.4),
-    2px 2px 4px rgba(0, 0, 0, 0.8);
-  animation: agotadoGlow 2s ease-in-out infinite alternate;
-  font-family: var(--headingFont);
-  text-transform: uppercase;
-}
-
-/* Animación de brillo para la palabra AGOTADO */
-@keyframes agotadoGlow {
-  0% {
-    text-shadow: 
-      0 0 5px rgba(255, 68, 68, 0.8),
-      0 0 10px rgba(255, 68, 68, 0.6),
-      0 0 15px rgba(255, 68, 68, 0.4),
-      2px 2px 4px rgba(0, 0, 0, 0.8);
-    color: #ff4444;
-  }
-  100% {
-    text-shadow: 
-      0 0 10px rgba(255, 68, 68, 1),
-      0 0 20px rgba(255, 68, 68, 0.8),
-      0 0 30px rgba(255, 68, 68, 0.6),
-      0 0 40px rgba(255, 68, 68, 0.4),
-      2px 2px 4px rgba(0, 0, 0, 0.8);
-    color: #ff6666;
-  }
 }
 
 .imgContainer {

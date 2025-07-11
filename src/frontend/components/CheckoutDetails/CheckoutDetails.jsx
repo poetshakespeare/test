@@ -29,7 +29,7 @@ const CheckoutDetails = ({
   } = useAllProductsContext();
 
   const { storeConfig } = useConfigContext();
-  const { formatPriceWithCode, getCurrentCurrency } = useCurrencyContext();
+  const { formatPriceWithCode, getCurrentCurrency, convertFromCUP } = useCurrencyContext();
   const STORE_WHATSAPP = storeConfig.storeInfo?.whatsappNumber || '+53 54690878';
   const SANTIAGO_ZONES = storeConfig.zones || [];
 
@@ -259,16 +259,16 @@ const CheckoutDetails = ({
     console.log('📞 Número de WhatsApp:', STORE_WHATSAPP);
     
     let message = `🛒 *NUEVO PEDIDO #${orderNumber}*\n\n`;
-    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `---------------------------------------------------------------\n`;
     message += `👤 *INFORMACIÓN DEL CLIENTE*\n`;
-    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `---------------------------------------------------------------\n`;
     message += `📝 *Nombre Completo:* ${firstName} ${lastName}\n`;
     message += `📧 *Correo Electrónico:* ${email}\n`;
     message += `💱 *Moneda seleccionada:* ${currency.flag} ${currency.name} (${currency.code})\n\n`;
     
     // Información del servicio con mejor formato
     message += `🚚 *DETALLES DE ENTREGA*\n`;
-    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `---------------------------------------------------------------\n`;
     
     if (selectedAddress.serviceType === SERVICE_TYPES.HOME_DELIVERY) {
       const zoneName = SANTIAGO_ZONES.find(z => z.id === selectedAddress.zone)?.name;
@@ -290,7 +290,7 @@ const CheckoutDetails = ({
     
     // Productos con iconos y mejor formato
     message += `🛍️ *PRODUCTOS SOLICITADOS*\n`;
-    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `──────────────────────────────────────────────────────────────\n`;
     cartFromContext.forEach((item, index) => {
       const productIcon = getProductIcon(item.category);
       const colorHex = item.colors[0]?.color || '#000000';
@@ -306,7 +306,7 @@ const CheckoutDetails = ({
     
     // Resumen financiero profesional
     message += `\n💳 *RESUMEN FINANCIERO*\n`;
-    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `──────────────────────────────────────────────────────────────\n`;
     message += `🛍️ *Subtotal productos:* ${formatPriceWithCode(totalAmountFromContext)}\n`;
     
     if (activeCoupon) {
@@ -317,10 +317,10 @@ const CheckoutDetails = ({
       message += `🚚 *Costo de entrega:* ${formatPriceWithCode(deliveryCost)}\n`;
     }
     
-    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `───────────────────────────────────────────────────────────────\n`;
     message += `💰 *TOTAL A PAGAR: ${formatPriceWithCode(finalPriceToPay)}*\n`;
     message += `💱 *Moneda: ${currency.flag} ${currency.name} (${currency.code})*\n`;
-    message += `═══════════════════════════════════════════════════════════════\n\n`;
+    message += `───────────────────────────────────────────────────────────────\n\n`;
     
     // Información adicional profesional
     message += `📅 *Fecha y hora del pedido:*\n`;

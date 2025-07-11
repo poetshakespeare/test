@@ -582,91 +582,42 @@ const ProductManager = () => {
               ➕ Agregar Color
             </button>
           </div>
-        <div className={styles.modernOptionsSection}>
-          <h4 className={styles.modernOptionsTitle}>
-            ⚙️ Configuración Avanzada del Producto
-          </h4>
-          
-          <div className={styles.modernOptionsGrid}>
-            {/* Opción de Envío */}
-            <div 
-              className={`${styles.modernOptionCard} ${styles.shippingCard} ${formData.isShippingAvailable ? styles.active : ''}`}
-              onClick={() => handleInputChange({ target: { name: 'isShippingAvailable', type: 'checkbox', checked: !formData.isShippingAvailable } })}
-            >
-              <div className={styles.modernOptionHeader}>
-                <div className={styles.modernOptionIcon}>🚚</div>
-                <h5 className={styles.modernOptionTitle}>Envío Disponible</h5>
-                <button
-                  type="button"
-                  className={`${styles.modernToggleSwitch} ${formData.isShippingAvailable ? styles.active : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleInputChange({ target: { name: 'isShippingAvailable', type: 'checkbox', checked: !formData.isShippingAvailable } });
-                  }}
-                />
-              </div>
-              <p className={styles.modernOptionDescription}>
-                Permite que este producto sea entregado a domicilio. Los clientes podrán seleccionar la opción de entrega durante el checkout.
-              </p>
-              <div className={`${styles.modernOptionNote} ${styles.modernOptionNote.shipping}`}>
-                <span className={styles.noteIcon}>⚡</span>
-                <span>Los cambios se aplican inmediatamente en el checkout</span>
-              </div>
-            </div>
 
-            {/* Opción de Cupones */}
-            <div 
-              className={`${styles.modernOptionCard} ${styles.couponsCard} ${formData.canUseCoupons ? styles.active : ''}`}
-              onClick={() => handleInputChange({ target: { name: 'canUseCoupons', type: 'checkbox', checked: !formData.canUseCoupons } })}
-            >
-              <div className={styles.modernOptionHeader}>
-                <div className={styles.modernOptionIcon}>🎫</div>
-                <h5 className={styles.modernOptionTitle}>Cupones de Descuento</h5>
-                <button
-                  type="button"
-                  className={`${styles.modernToggleSwitch} ${formData.canUseCoupons ? styles.active : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleInputChange({ target: { name: 'canUseCoupons', type: 'checkbox', checked: !formData.canUseCoupons } });
-                  }}
-                />
-              </div>
-              <p className={styles.modernOptionDescription}>
-                Permite que este producto sea elegible para cupones de descuento. Los cupones solo se aplicarán si TODOS los productos del carrito tienen esta opción habilitada.
-              </p>
-              <div className={`${styles.modernOptionNote} ${styles.modernOptionNote.coupons}`}>
-                <span className={styles.noteIcon}>⚡</span>
-                <span>Los cupones requieren que todos los productos del carrito sean elegibles</span>
-              </div>
-            </div>
-
-            {/* Opción de Producto Destacado */}
-            <div 
-              className={`${styles.modernOptionCard} ${styles.featuredCard} ${formData.featured ? styles.active : ''}`}
-              onClick={() => handleInputChange({ target: { name: 'featured', type: 'checkbox', checked: !formData.featured } })}
-            >
-              <div className={styles.modernOptionHeader}>
-                <div className={styles.modernOptionIcon}>⭐</div>
-                <h5 className={styles.modernOptionTitle}>Producto Destacado</h5>
-                <button
-                  type="button"
-                  className={`${styles.modernToggleSwitch} ${formData.featured ? styles.active : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleInputChange({ target: { name: 'featured', type: 'checkbox', checked: !formData.featured } });
-                  }}
-                />
-              </div>
-              <p className={styles.modernOptionDescription}>
-                Marca este producto como destacado para que aparezca en la sección de "Productos Destacados" de la página principal.
-              </p>
-              <div className={`${styles.modernOptionNote} ${styles.modernOptionNote.featured}`}>
-                <span className={styles.noteIcon}>⚡</span>
-                <span>Aparecerá en la página principal como producto destacado</span>
-              </div>
-            </div>
+          <div className={styles.checkboxGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                name="isShippingAvailable"
+                checked={formData.isShippingAvailable}
+                onChange={handleInputChange}
+              />
+              🚚 Envío Disponible (Permite entrega a domicilio)
+              <small className={styles.shippingNote}>
+                ⚡ Los cambios se aplican inmediatamente en el checkout
+              </small>
+            </label>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                name="canUseCoupons"
+                checked={formData.canUseCoupons}
+                onChange={handleInputChange}
+              />
+              🎫 Puede Usar Cupones de Descuento
+              <small className={styles.couponNote}>
+                ⚡ Los cupones solo se aplicarán si TODOS los productos del carrito tienen esta opción habilitada
+              </small>
+            </label>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                name="featured"
+                checked={formData.featured}
+                onChange={handleInputChange}
+              />
+              ⭐ Producto Destacado
+            </label>
           </div>
-        </div>
 
           <div className={styles.formActions}>
             <button onClick={handleSave} className="btn btn-primary">

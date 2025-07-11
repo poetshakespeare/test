@@ -32,17 +32,17 @@ export const FOOTER_LINKS = [
   {
     id: 1,
     icon: <AiOutlineTwitter />,
-    url: 'https://x.com/yero_shop',
+    url: 'https://twitter.com/Swastik2001',
   },
   {
     id: 2,
     icon: <AiFillLinkedin />,
-    url: 'https://www.linkedin.com/in/yero-shop-com-a47599373',
+    url: 'https://www.linkedin.com/in/swastik-patro-2a54bb19b/',
   },
   {
     id: 3,
     icon: <AiFillGithub />,
-    url: 'https://yeroportal.vercel.app/',
+    url: 'https://github.com/swastikpatro',
   },
 ];
 
@@ -219,21 +219,21 @@ export const CURRENCIES = {
     name: 'Dólar Estadounidense',
     symbol: '$',
     flag: '🇺🇸',
-    rate: 385,
+    rate: 320,
   },
   EUR: {
     code: 'EUR',
     name: 'Euro',
     symbol: '€',
     flag: '🇪🇺',
-    rate: 425,
+    rate: 340,
   },
   MLC: {
     code: 'MLC',
     name: 'Moneda Libremente Convertible',
     symbol: 'MLC',
     flag: '🏦',
-    rate: 240,
+    rate: 270,
   },
 };
 

@@ -10,7 +10,7 @@ export const initialFiltersState = {
   allProducts: [],
   filteredProducts: [],
   minPrice: 0,
-  maxPrice: Infinity,
+  maxPrice: Infinity, // will be handled
   filters: {
     search: '',
     category: null,
@@ -23,61 +23,36 @@ export const initialFiltersState = {
   displayableProductsLength: 0,
 };
 
-// FUNCIÓN MEJORADA PARA CALCULAR RANGOS DE PRECIO DINÁMICOS Y AMIGABLES
-const calculatePriceRange = (products) => {
-  if (!products || products.length === 0) {
-    return { minPrice: 0, maxPrice: 100000 };
+/* 
+  category: {
+    laptop: false,
+    tv: false,
+    earphone: false,
+    smartwatch: false,
+    mobile: false
   }
-
-  const prices = products.map(({ price }) => price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
-  
-  console.log(`📊 Precios originales: ${minPrice} - ${maxPrice} CUP`);
-  
-  // Función para redondear hacia abajo a números "amigables"
-  const roundDownToFriendly = (value) => {
-    if (value <= 100) return Math.floor(value / 10) * 10; // Redondear a decenas
-    if (value <= 1000) return Math.floor(value / 100) * 100; // Redondear a centenas
-    if (value <= 10000) return Math.floor(value / 1000) * 1000; // Redondear a miles
-    if (value <= 100000) return Math.floor(value / 5000) * 5000; // Redondear a 5 miles
-    return Math.floor(value / 10000) * 10000; // Redondear a 10 miles
-  };
-
-  // Función para redondear hacia arriba a números "amigables"
-  const roundUpToFriendly = (value) => {
-    if (value <= 100) return Math.ceil(value / 10) * 10; // Redondear a decenas
-    if (value <= 1000) return Math.ceil(value / 100) * 100; // Redondear a centenas
-    if (value <= 10000) return Math.ceil(value / 1000) * 1000; // Redondear a miles
-    if (value <= 100000) return Math.ceil(value / 5000) * 5000; // Redondear a 5 miles
-    return Math.ceil(value / 10000) * 10000; // Redondear a 10 miles
-  };
-
-  // Aplicar redondeo amigable
-  const adjustedMin = Math.max(0, roundDownToFriendly(minPrice));
-  const adjustedMax = roundUpToFriendly(maxPrice);
-  
-  console.log(`📊 Rango de precios ajustado: ${adjustedMin} - ${adjustedMax} CUP`);
-  
-  return {
-    minPrice: adjustedMin,
-    maxPrice: adjustedMax
-  };
-};
+*/
 
 export const filtersReducer = (state, action) => {
   switch (action.type) {
     case FILTERS_ACTION.GET_PRODUCTS_FROM_PRODUCT_CONTEXT:
       const allProductsCloned = structuredClone(action.payload?.products);
-      
-      // CÁLCULO DINÁMICO DE RANGOS DE PRECIO MEJORADO Y AMIGABLE
-      const { minPrice, maxPrice } = calculatePriceRange(allProductsCloned);
+
+      const allPrices = allProductsCloned.map(({ price }) => price);
 
       const filteredProducts = givePaginatedList(allProductsCloned);
 
-      const allCategoryNames = action.payload?.categories
-        .filter(category => !category.disabled) // Solo categorías habilitadas
-        .map(({ categoryName }) => categoryName);
+      const allCategoryNames = action.payload?.categories.map(
+        ({ categoryName }) => categoryName
+      );
+
+      let minPrice = 0,
+        maxPrice = 0;
+
+      if (allProductsCloned.length > 1) {
+        maxPrice = Math.max(...allPrices);
+        minPrice = Math.min(...allPrices);
+      }
 
       return {
         ...state,
@@ -90,7 +65,6 @@ export const filtersReducer = (state, action) => {
           category: convertArrayToObjectWithPropertyFALSE(allCategoryNames),
           price: [minPrice, maxPrice],
         },
-        displayableProductsLength: allProductsCloned.length,
       };
 
     case FILTERS_ACTION.UPDATE_CATEGORY:
@@ -115,6 +89,7 @@ export const filtersReducer = (state, action) => {
         },
       };
 
+    // called onchange of filters
     case FILTERS_ACTION.UPDATE_FILTERS:
       return {
         ...state,
@@ -131,7 +106,7 @@ export const filtersReducer = (state, action) => {
         filters: {
           ...state.filters,
           category: {
-            ...state.filters.category,
+            ...state.category,
             [action.payloadCategory]: true,
           },
         },
@@ -178,22 +153,17 @@ export const filtersReducer = (state, action) => {
         (categoryBool) => categoryBool
       );
 
+      // this temp products will become filteredProducts
       let tempProducts = allProducts;
 
-      // FILTRO DE BÚSQUEDA MEJORADO
-      tempProducts = allProducts.filter(({ name, description, company, category }) => {
+      // search handled here
+      // company is not filtered here after submitting!!
+      tempProducts = allProducts.filter(({ name }) => {
         const trimmedSearchText = searchText.trim();
-        if (!trimmedSearchText) return true;
-        
-        return (
-          lowerizeAndCheckIncludes(name, trimmedSearchText) ||
-          lowerizeAndCheckIncludes(description || '', trimmedSearchText) ||
-          lowerizeAndCheckIncludes(company, trimmedSearchText) ||
-          lowerizeAndCheckIncludes(category, trimmedSearchText)
-        );
+        return lowerizeAndCheckIncludes(name, trimmedSearchText);
       });
 
-      // FILTRO DE CATEGORÍA
+      // category checkbox handled here
       if (isAnyCheckboxChecked) {
         tempProducts = tempProducts.filter(
           ({ category: categoryPropertyOfProduct }) =>
@@ -201,7 +171,7 @@ export const filtersReducer = (state, action) => {
         );
       }
 
-      // FILTRO DE MARCA
+      // company dropdown handled here
       if (companyInState !== 'all') {
         tempProducts = tempProducts.filter(
           ({ company: companyPropertyOfProduct }) =>
@@ -209,7 +179,7 @@ export const filtersReducer = (state, action) => {
         );
       }
 
-      // FILTRO DE PRECIO MEJORADO CON VALIDACIÓN
+      // price handled here, no (if) condition, this will run always!!
       tempProducts = tempProducts.filter(
         ({ price: pricePropertyOfProduct }) => {
           const [currMinPriceRange, currMaxPriceRange] = priceInState;
@@ -220,12 +190,10 @@ export const filtersReducer = (state, action) => {
         }
       );
 
-      // FILTRO DE CALIFICACIÓN
-      if (ratingInState > -1) {
-        tempProducts = tempProducts.filter(({ stars }) => stars >= ratingInState);
-      }
+      // ratings handled here, no (if) condition, this will run always!!
+      tempProducts = tempProducts.filter(({ stars }) => stars >= ratingInState);
 
-      // ORDENAMIENTO MEJORADO
+      // sort handled here!!, if sortByOption is '', ignore sorting
       if (!!sortByOption) {
         switch (sortByOption) {
           case SORT_TYPE.PRICE_LOW_TO_HIGH: {
@@ -240,36 +208,46 @@ export const filtersReducer = (state, action) => {
 
           case SORT_TYPE.NAME_A_TO_Z: {
             tempProducts = [...tempProducts].sort((a, b) => {
-              return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+              a = a.name.toLowerCase();
+              b = b.name.toLowerCase();
+
+              if (a > b) return 1;
+
+              if (a < b) return -1;
+
+              return 0;
             });
             break;
           }
 
           case SORT_TYPE.NAME_Z_TO_A: {
             tempProducts = [...tempProducts].sort((a, b) => {
-              return b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+              a = a.name.toLowerCase();
+              b = b.name.toLowerCase();
+
+              if (a > b) return -1;
+              if (a < b) return 1;
+              return 0;
             });
+
             break;
           }
 
           default:
-            console.warn(`Tipo de ordenamiento no reconocido: ${sortByOption}`);
+            throw new Error(`${sortByOption} is not defined`);
         }
       }
 
-      // PAGINACIÓN
-      const paginatedProducts = givePaginatedList(tempProducts);
-
-      console.log(`🔍 Filtros aplicados: ${tempProducts.length} productos encontrados`);
+      // pagination logic
+      tempProducts = givePaginatedList(tempProducts);
 
       return {
         ...state,
-        filteredProducts: paginatedProducts,
-        displayableProductsLength: tempProducts.length,
+        filteredProducts: tempProducts,
+        displayableProductsLength: tempProducts.flat().length,
         paginateIndex: 0,
       };
-
     default:
-      throw new Error(`Error: ${action.type} en filtersReducer no existe`);
+      throw new Error(`Error: ${action.type} in filtersReducer does not exist`);
   }
 };

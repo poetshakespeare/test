@@ -14,65 +14,7 @@ Variables
 html {
   font-size: 100%;
   scroll-behavior: smooth;
-  /* Prevenir zoom en móviles */
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 } /*16px*/
-
-/* Prevenir zoom en inputs y elementos interactivos en móviles */
-input, select, textarea, button {
-  font-size: 16px !important;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-/* Prevenir zoom específico para iOS */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  select, textarea, input[type="text"], input[type="password"], 
-  input[type="datetime"], input[type="datetime-local"], 
-  input[type="date"], input[type="month"], input[type="time"], 
-  input[type="week"], input[type="number"], input[type="email"], 
-  input[type="url"], input[type="search"], input[type="tel"], 
-  input[type="color"] {
-    font-size: 16px !important;
-  }
-}
-
-/* Prevenir zoom en Android */
-@media screen and (max-width: 768px) {
-  html {
-    -webkit-text-size-adjust: none;
-    -ms-text-size-adjust: none;
-    text-size-adjust: none;
-  }
-  
-  input, select, textarea {
-    font-size: 16px !important;
-    transform: scale(1);
-    zoom: 1;
-  }
-}
-
-/* Prevenir zoom con gestos táctiles */
-* {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Permitir selección de texto solo donde sea necesario */
-input, textarea, [contenteditable="true"], p, span, h1, h2, h3, h4, h5, h6 {
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
 
 :root {
   /* colors */
