@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Desactivar zoom en dispositivos Apple -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    
+    <!-- Prevenir zoom automático en inputs en iOS -->
+    <style>
+      @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        select,
+        textarea,
+        input[type="text"],
+        input[type="password"],
+        input[type="datetime"],
+        input[type="datetime-local"],
+        input[type="date"],
+        input[type="month"],
+        input[type="time"],
+        input[type="week"],
+        input[type="number"],
+        input[type="email"],
+        input[type="url"],
+        input[type="search"],
+        input[type="tel"],
+        input[type="color"] {
+          font-size: 16px !important;
+        }
+      }
+    </style>
+
+    <meta name="title" property="og:title" content="Yero Shop!" />
+    <meta name="type" property="og:type" content="website" />
+    <meta
+      name="url"
+      property="og:url"
+      content="https://gada-electronics-ecommerce.vercel.app/"
+    />
+    <meta
+      name="description"
+      property="og:description"
+      content="¡Bienvenido a Yero Shop! Experimenta la alegría de las compras en línea sin problemas y explora el mundo de la electrónica con nosotros. Comienza a navegar por nuestra vasta colección hoy y eleva tu estilo de vida digital con nuestros productos y servicios excepcionales."
+    />
+
+    <meta
+      property="og:image"
+      content="https://res.cloudinary.com/dtbd1y4en/image/upload/v1685723562/banner_puc5rc.png"
+    />
+    <meta property="og:image:alt" content="Banner de la aplicación" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="800" />
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.svg" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.svg" />
+    <link rel="icon" type="image/svg" sizes="32x32" href="/favicon-32x32.svg" />
+    <link rel="icon" type="image/svg" sizes="16x16" href="/favicon-16x16.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- favicon end -->
+
+    <!-- fonts import -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabin&family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <!-- fonts import end -->
+    <title>Yero Shop!</title>
+  </head>
+  <body>
+    <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
+
+    <div id="root"></div>
+    <div id="modal-root"></div>
+  </body>
+</html>

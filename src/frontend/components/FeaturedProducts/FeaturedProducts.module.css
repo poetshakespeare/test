@@ -1,0 +1,11 @@
+.featuredCenter {
+  display: grid;
+  justify-items: center;
+  gap: 3rem;
+}
+
+@media screen and (min-width: 768px) {
+  .featuredCenter {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+}

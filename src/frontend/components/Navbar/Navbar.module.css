@@ -1,0 +1,48 @@
+.nav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 5rem;
+  background: var(--white);
+  box-shadow: var(--shadow-3);
+  z-index: 101;
+}
+
+.navCenter {
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.loginNavCenter {
+  justify-content: center;
+}
+
+.loginNavCenter h3 {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+
+.logo {
+  margin-top: 0.75rem;
+  color: var(--black);
+}
+
+.logoTheme {
+  color: var(--primary-600);
+}
+
+@media screen and (max-width: 768px) {
+  .nav {
+    height: 6rem;
+  }
+  .logo {
+    margin-top: 0.25rem;
+    font-size: 1.15rem;
+  }
+}

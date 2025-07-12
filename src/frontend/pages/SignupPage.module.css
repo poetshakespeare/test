@@ -1,0 +1,157 @@
+.signupContainer {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.providerOptions {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: var(--grey-50);
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--primary-200);
+}
+
+.providerCard {
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  padding: 1.5rem;
+  border: 2px solid var(--grey-200);
+  transition: var(--transition);
+}
+
+.providerCard:hover {
+  box-shadow: var(--shadow-3);
+  transform: translateY(-2px);
+}
+
+.providerInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.providerIcon {
+  font-size: 2rem;
+}
+
+.providerInfo h4 {
+  margin: 0;
+  color: var(--primary-600);
+  font-size: 1.2rem;
+}
+
+.providerInfo p {
+  margin: 0;
+  color: var(--grey-600);
+  font-size: 0.9rem;
+}
+
+.providerActions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.providerActions button {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.providerActions button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-3);
+}
+
+.emailField {
+  position: relative;
+}
+
+.emailProvider {
+  position: absolute;
+  right: 0.75rem;
+  top: 2.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--white);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--primary-200);
+  font-size: 0.8rem;
+  color: var(--primary-600);
+}
+
+.popularProviders {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--grey-50);
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--primary-200);
+}
+
+.popularProviders h4 {
+  margin: 0 0 1rem 0;
+  color: var(--primary-600);
+  text-align: center;
+}
+
+.providersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.providerChip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--grey-200);
+  font-size: 0.85rem;
+  color: var(--grey-700);
+  transition: var(--transition);
+}
+
+.providerChip:hover {
+  border-color: var(--primary-300);
+  background: var(--primary-50);
+  color: var(--primary-700);
+}
+
+@media screen and (max-width: 768px) {
+  .providerActions {
+    flex-direction: column;
+  }
+
+  .providerActions button {
+    min-width: auto;
+  }
+
+  .providerInfo {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .emailProvider {
+    position: static;
+    margin-top: 0.5rem;
+    justify-content: center;
+  }
+
+  .providersList {
+    gap: 0.5rem;
+  }
+
+  .providerChip {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}

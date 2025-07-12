@@ -1,0 +1,138 @@
+.configManager {
+  max-width: 100%;
+}
+
+.configManager h2 {
+  color: var(--primary-600);
+  margin-bottom: 2rem;
+}
+
+.configSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.configCard {
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.configCard:hover {
+  box-shadow: var(--shadow-3);
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: var(--white);
+  padding: 1.5rem;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.cardContent {
+  padding: 2rem;
+}
+
+.cardContent p {
+  color: var(--grey-600);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.importContainer {
+  position: relative;
+}
+
+.fileInput {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.fileInput:disabled {
+  cursor: not-allowed;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.infoSection {
+  background: var(--grey-50);
+  padding: 2rem;
+  border-radius: var(--borderRadius);
+  border-left: 4px solid var(--primary-500);
+}
+
+.infoSection h3 {
+  color: var(--primary-600);
+  margin-bottom: 1.5rem;
+}
+
+.infoList {
+  display: grid;
+  gap: 1rem;
+}
+
+.infoItem {
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--grey-200);
+}
+
+.infoItem strong {
+  color: var(--primary-600);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+@media screen and (max-width: 768px) {
+  .configSection {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .cardContent {
+    padding: 1rem;
+  }
+
+  .actionButton {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+
+  .infoSection {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,80 @@
+.pageCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pageCenter main {
+  box-shadow: var(--shadow-2);
+  background: var(--white);
+  min-height: 17rem;
+  width: 95vw;
+  letter-spacing: var(--letterSpacing);
+  max-width: 800px;
+}
+
+.pageCenter header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0rem;
+  padding: 2rem 1.5rem;
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.notActiveLinkCSS {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: var(--borderRadius);
+  transition: var(--transition);
+  text-decoration: none;
+  color: var(--grey-600);
+  border: 2px solid transparent;
+}
+
+.notActiveLinkCSS:hover {
+  background: var(--primary-100);
+  color: var(--primary-600);
+  border-color: var(--primary-200);
+}
+
+.activeLinkCSS {
+  padding: 0.5rem 1rem;
+  color: var(--white);
+  background: var(--primary-500);
+  font-size: 0.9rem;
+  border-radius: var(--borderRadius);
+  font-weight: 600;
+  border: 2px solid var(--primary-500);
+  text-decoration: none;
+}
+
+@media screen and (max-width: 768px) {
+  .pageCenter header {
+    padding: 1.5rem 1rem;
+    padding-bottom: 0.5rem;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .notActiveLinkCSS,
+  .activeLinkCSS {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .pageCenter header {
+    padding: 2rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .notActiveLinkCSS,
+  .activeLinkCSS {
+    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+  }
+}

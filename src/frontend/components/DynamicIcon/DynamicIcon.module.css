@@ -1,0 +1,41 @@
+.iconFallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--grey-300);
+  color: var(--white);
+  font-size: 0.7em;
+  font-weight: 600;
+  border-radius: 2px;
+  position: relative;
+}
+
+.iconFallback::after {
+  content: '?';
+  font-size: 0.8em;
+}
+
+.iconContainer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.iconButton:hover {
+  transform: scale(1.1);
+}
+
+.iconButton:active {
+  transform: scale(0.95);
+}

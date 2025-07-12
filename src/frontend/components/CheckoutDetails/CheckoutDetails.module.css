@@ -1,0 +1,419 @@
+.checkout {
+  composes: checkout from '../../pages/CartPage/CartPage.module.css';
+  background: linear-gradient(135deg, var(--white), var(--grey-50));
+  border: 2px solid var(--primary-200);
+}
+
+.checkoutHeader {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: var(--white);
+  padding: 2rem 1.5rem;
+  margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+  border-radius: var(--borderRadius) var(--borderRadius) 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.checkoutHeader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.priceTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.titleIcon {
+  font-size: 2rem;
+  animation: bounce 2s infinite;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-8px);
+  }
+  60% {
+    transform: translateY(-4px);
+  }
+}
+
+.titleText {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: linear-gradient(45deg, #ffffff, #f0f9ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+  from {
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+  }
+  to {
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.8));
+  }
+}
+
+.titleUnderline {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+  border-radius: 2px;
+  animation: underlineGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes underlineGlow {
+  from {
+    box-shadow: 0 0 5px rgba(255,255,255,0.5);
+    transform: scaleX(0.8);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(255,255,255,0.9);
+    transform: scaleX(1.2);
+  }
+}
+
+.priceBreakdown {
+  background: linear-gradient(135deg, var(--grey-50), var(--primary-50));
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  margin: 1rem 0;
+  border: 2px solid var(--primary-200);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.row {
+  composes: row from '../../pages/CartPage/CartPage.module.css';
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--grey-200);
+  transition: var(--transition);
+}
+
+.row:hover {
+  background: rgba(59, 130, 246, 0.05);
+  padding-left: 0.5rem;
+  border-radius: var(--borderRadius);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.totalPrice {
+  composes: totalPrice from '../../pages/CartPage/CartPage.module.css';
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  border: 3px solid var(--primary-400);
+  font-size: 1.2rem;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  animation: totalPulse 3s ease-in-out infinite;
+}
+
+@keyframes totalPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+  }
+}
+
+.orderBtn {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  border: none;
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1.2rem;
+  padding: 1.25rem 2rem;
+  border-radius: var(--borderRadius);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+}
+
+.orderBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.orderBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #128C7E, #25D366);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6);
+}
+
+.orderBtn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.orderBtn:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.orderBtn.processing {
+  background: linear-gradient(135deg, var(--grey-400), var(--grey-500));
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.whatsappIcon {
+  font-size: 1.4rem;
+  animation: whatsappBounce 2s infinite;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+@keyframes whatsappBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  40% {
+    transform: translateY(-6px) rotate(-5deg);
+  }
+  60% {
+    transform: translateY(-3px) rotate(5deg);
+  }
+}
+
+.processingContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--white);
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.searchCoupons {
+  display: flex;
+  align-items: center;
+  gap: 0 0.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+  background: var(--white);
+  padding: 1rem;
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--primary-200);
+}
+
+.searchCoupons > div {
+  display: flex;
+  width: 100%;
+}
+
+.searchCoupons svg {
+  font-size: 1.5rem;
+  color: var(--primary-500);
+}
+
+.disabledInput {
+  background: var(--grey-100) !important;
+  color: var(--grey-500) !important;
+  cursor: not-allowed !important;
+}
+
+.couponWarning {
+  position: absolute;
+  left: 1rem;
+  top: 4rem;
+  right: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  border-radius: var(--borderRadius);
+  color: #92400e;
+  font-weight: 500;
+  font-size: 0.9rem;
+  z-index: 10;
+}
+
+.couponWarning span {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.couponWarning small {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.couponSuggestion {
+  position: absolute;
+  left: 1rem;
+  top: 2.5rem;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--grey-100);
+  background: var(--white);
+  box-shadow: var(--shadow-3);
+  border-radius: var(--borderRadius);
+  z-index: 10;
+}
+
+.couponSuggestion > button {
+  background: var(--white);
+  color: var(--black);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: none;
+  position: relative;
+  border-radius: 0;
+  border-color: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0.35rem;
+}
+
+.couponSuggestion > button:hover {
+  background: var(--primary-100);
+}
+
+.couponSuggestion > button:disabled {
+  background: var(--grey-100);
+}
+
+.couponSuggestion > .btnDisableMobile {
+  background: var(--grey-100);
+  cursor: not-allowed;
+}
+
+.couponSuggestion > .btnDisableMobile:hover {
+  background: var(--grey-100);
+}
+
+.tooltip {
+  visibility: hidden;
+  position: absolute;
+  top: -1.5rem;
+  left: 0;
+  background: var(--white);
+  padding: 0.5rem;
+  z-index: 3;
+  border: 2px solid var(--primary-700);
+  font-size: 0.5rem;
+  border-radius: var(--borderRadius);
+}
+
+.closeBtn {
+  color: var(--red-dark);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.closeBtn:hover {
+  transform: scale(1.2);
+}
+
+@media screen and (min-width: 768px) {
+  .tooltip {
+    font-size: 0.75rem;
+    left: 25%;
+    top: 10%;
+  }
+
+  .couponSuggestion > button:disabled:hover .tooltip {
+    visibility: visible;
+  }
+
+  article.checkout {
+    min-width: 25rem;
+  }
+  .couponSuggestion > button:hover:not(button:disabled) {
+    background: var(--primary-100);
+  }
+
+  .orderBtn {
+    font-size: 1.3rem;
+    padding: 1.5rem 2rem;
+  }
+
+  .priceTitle {
+    font-size: 1.8rem;
+  }
+
+  .titleIcon {
+    font-size: 2.5rem;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  article.checkout {
+    min-width: 30rem;
+  }
+}
+
+.couponSuggestion div {
+  border: 2px dashed var(--primary-500);
+  padding: 0.25rem;
+}
+
+.couponApplied {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-500);
+  font-weight: 600;
+  cursor: default;
+}
+
+.couponText {
+  margin: 0;
+}

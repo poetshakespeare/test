@@ -1,0 +1,361 @@
+.sourceCodeManager {
+  max-width: 100%;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--primary-200);
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--primary-600);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statsContainer {
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  border: 2px solid var(--primary-300);
+  border-radius: var(--borderRadius);
+  padding: 2rem;
+  text-align: center;
+}
+
+.statCard h4 {
+  margin: 0 0 1.5rem 0;
+  color: var(--primary-700);
+  font-size: 1.3rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-2);
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-600);
+  margin-bottom: 0.5rem;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: var(--grey-600);
+  font-weight: 500;
+}
+
+.lastScanned {
+  margin: 1rem 0 0 0;
+  color: var(--grey-600);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.searchContainer {
+  margin-bottom: 2rem;
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 2rem;
+  height: 600px;
+  border: 2px solid var(--grey-200);
+  border-radius: var(--borderRadius);
+  overflow: hidden;
+}
+
+.sidebar {
+  background: var(--grey-50);
+  display: flex;
+  flex-direction: column;
+}
+
+.categoryTabs {
+  display: flex;
+  border-bottom: 2px solid var(--grey-200);
+}
+
+.categoryTab {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  background: var(--grey-100);
+  color: var(--grey-700);
+  cursor: pointer;
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.categoryTab:hover {
+  background: var(--primary-100);
+  color: var(--primary-700);
+}
+
+.categoryTab.active {
+  background: var(--primary-500);
+  color: var(--white);
+}
+
+.fileTree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.subcategory {
+  margin-bottom: 1.5rem;
+}
+
+.subcategoryTitle {
+  margin: 0 0 0.75rem 0;
+  color: var(--primary-600);
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  background: var(--primary-100);
+  border-radius: var(--borderRadius);
+}
+
+.fileList {
+  margin-left: 1rem;
+}
+
+.fileItem {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid var(--grey-200);
+}
+
+.fileItem:hover {
+  background: var(--primary-50);
+  border-color: var(--primary-300);
+  transform: translateX(5px);
+}
+
+.fileItem.selected {
+  background: var(--primary-100);
+  border-color: var(--primary-500);
+  box-shadow: var(--shadow-2);
+}
+
+.fileName {
+  font-weight: 600;
+  color: var(--grey-800);
+  margin-bottom: 0.25rem;
+}
+
+.fileInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--grey-500);
+}
+
+.filePath {
+  font-size: 0.8rem;
+  color: var(--grey-500);
+  margin-top: 0.25rem;
+}
+
+.searchResults h4 {
+  color: var(--primary-600);
+  margin-bottom: 1rem;
+}
+
+.fileViewer {
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+}
+
+.fileContent {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fileHeader {
+  padding: 1rem;
+  border-bottom: 2px solid var(--grey-200);
+  background: var(--grey-50);
+}
+
+.fileHeader h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary-600);
+  font-size: 1.1rem;
+}
+
+.fileMetadata {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--grey-600);
+}
+
+.codeContainer {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.codeContent {
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--grey-800);
+  background: var(--grey-50);
+  padding: 1rem;
+  border-radius: var(--borderRadius);
+  overflow-x: auto;
+}
+
+.noFileSelected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--grey-500);
+}
+
+.noFileSelected h3 {
+  margin-bottom: 1rem;
+  color: var(--grey-600);
+}
+
+.infoSection {
+  background: var(--grey-50);
+  padding: 2rem;
+  border-radius: var(--borderRadius);
+  margin-top: 2rem;
+  border-left: 4px solid var(--primary-500);
+}
+
+.infoSection h3 {
+  color: var(--primary-600);
+  margin-bottom: 1.5rem;
+}
+
+.infoList {
+  display: grid;
+  gap: 1rem;
+}
+
+.infoItem {
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--grey-200);
+  transition: var(--transition);
+}
+
+.infoItem:hover {
+  box-shadow: var(--shadow-2);
+  transform: translateX(5px);
+}
+
+.infoItem strong {
+  color: var(--primary-600);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Scrollbar personalizado */
+.fileTree::-webkit-scrollbar,
+.codeContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.fileTree::-webkit-scrollbar-track,
+.codeContainer::-webkit-scrollbar-track {
+  background: var(--grey-100);
+  border-radius: 4px;
+}
+
+.fileTree::-webkit-scrollbar-thumb,
+.codeContainer::-webkit-scrollbar-thumb {
+  background: var(--primary-300);
+  border-radius: 4px;
+}
+
+.fileTree::-webkit-scrollbar-thumb:hover,
+.codeContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-500);
+}
+
+@media screen and (max-width: 1024px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  
+  .sidebar {
+    height: 400px;
+  }
+  
+  .fileViewer {
+    height: 400px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .fileMetadata {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .categoryTabs {
+    flex-direction: column;
+  }
+}
