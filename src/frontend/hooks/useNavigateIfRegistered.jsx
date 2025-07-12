@@ -8,7 +8,6 @@ const useNavigateIfRegistered = (user) => {
     if (user) {
       navigate('/', { replace: true });
     }
-  }, [user, navigate]);
 };
 
 export default useNavigateIfRegistered;

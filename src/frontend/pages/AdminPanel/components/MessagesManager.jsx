@@ -5,7 +5,6 @@ import styles from './MessagesManager.module.css';
 
 const MessagesManager = () => {
   const [messages, setMessages] = useState({});
-  const [editingMessage, setEditingMessage] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -110,6 +109,7 @@ const MessagesManager = () => {
   };
 
   useEffect(() => {
+    const loadMessages = () => {
     // Cargar mensajes desde localStorage o usar los predeterminados
     const savedMessages = localStorage.getItem('storeMessages');
     if (savedMessages) {
@@ -121,6 +121,9 @@ const MessagesManager = () => {
     } else {
       setMessages(defaultMessages);
     }
+    };
+    
+    loadMessages();
   }, []);
 
   const saveMessages = (newMessages) => {
@@ -171,8 +174,9 @@ const MessagesManager = () => {
           }
         });
         if (Object.keys(categoryMessages).length > 0) {
-          filteredMessages[category] = categoryMessages;
-        }
+          console.error('Error loading messages:', error);
+          setMessages({});
+        setMessages({});
       }
     });
     

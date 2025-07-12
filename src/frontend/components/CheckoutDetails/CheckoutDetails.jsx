@@ -21,6 +21,7 @@ const CheckoutDetails = ({ activeAddressId, updateCheckoutStatus, timer }) => {
 
   const [activeCoupon, setActiveCoupon] = useState(null);
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
+  const [orderError, setOrderError] = useState(null);
 
   const SANTIAGO_ZONES = storeConfig.zones || [];
   const STORE_WHATSAPP = storeConfig.storeInfo?.whatsappNumber || '+53 54690878';
@@ -105,6 +106,8 @@ const CheckoutDetails = ({ activeAddressId, updateCheckoutStatus, timer }) => {
   };
 
   const handleOrderSubmit = async () => {
+    setOrderError(null);
+    
     if (!activeAddressId) {
       toastHandler(ToastType.Error, 'Por favor selecciona una dirección de entrega');
       return;
@@ -134,9 +137,9 @@ const CheckoutDetails = ({ activeAddressId, updateCheckoutStatus, timer }) => {
       // Intentar abrir WhatsApp
       let whatsappOpened = false;
       
-      for (let i = 0; i < whatsappUrls.length; i++) {
+      for (const [index, url] of whatsappUrls.entries()) {
         try {
-          const newWindow = window.open(whatsappUrls[i], '_blank');
+          const newWindow = window.open(url, '_blank');
           
           if (newWindow && !newWindow.closed) {
             whatsappOpened = true;
@@ -144,14 +147,14 @@ const CheckoutDetails = ({ activeAddressId, updateCheckoutStatus, timer }) => {
           }
           
           // Si no se pudo abrir y hay más URLs, continuar
-          if (i < whatsappUrls.length - 1) {
+          if (index < whatsappUrls.length - 1) {
             console.log('🔄 Intentando siguiente método...');
             await new Promise(resolve => setTimeout(resolve, 500));
           }
         } catch (error) {
-          console.error(`Error con método ${i + 1}:`, error);
+          console.error(`Error con método ${index + 1}:`, error);
           
-          if (i < whatsappUrls.length - 1) {
+          if (index < whatsappUrls.length - 1) {
             console.log('🔄 Intentando siguiente método...');
             await new Promise(resolve => setTimeout(resolve, 500));
           }
@@ -193,6 +196,7 @@ const CheckoutDetails = ({ activeAddressId, updateCheckoutStatus, timer }) => {
     } catch (error) {
       console.error('Error al procesar el pedido:', error);
       toastHandler(ToastType.Error, 'Error al procesar el pedido. Intenta nuevamente.');
+      setOrderError('Error al procesar el pedido');
     } finally {
       setIsProcessingOrder(false);
     }
@@ -288,6 +292,12 @@ const CheckoutDetails = ({ activeAddressId, updateCheckoutStatus, timer }) => {
       {!activeAddressId && (
         <p style={{ textAlign: 'center', color: '#666', fontSize: '0.9rem', marginTop: '1rem' }}>
           Selecciona una dirección para continuar
+        </p>
+      )}
+      
+      {orderError && (
+        <p style={{ textAlign: 'center', color: '#dc2626', fontSize: '0.9rem', marginTop: '1rem' }}>
+          {orderError}
         </p>
       )}
     </article>

@@ -25,7 +25,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
   // EFECTO PARA ACTUALIZAR EL ESTADO CUANDO CAMBIE EL CARRITO O LA CONFIGURACIÓN
   useEffect(() => {
     // FUNCIÓN MEJORADA PARA VERIFICAR ENVÍO DISPONIBLE CON SINCRONIZACIÓN EN TIEMPO REAL
-    const hasShippingAvailableInCart = () => {
+    const updateShippingAvailability = () => {
       // 1. Obtener productos actualizados desde localStorage (configuración del admin)
       const savedConfig = localStorage.getItem('adminStoreConfig');
       let adminProducts = [];
@@ -40,7 +40,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       }
 
       // 2. Verificar cada producto en el carrito
-      return cart.some(cartItem => {
+      const hasShipping = cart.some(cartItem => {
         // Extraer el ID del producto (sin el color)
         const productId = cartItem._id.split('#')[0] || cartItem._id;
         
@@ -57,10 +57,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
         console.log(`⚠️ Producto ${cartItem.name}: usando datos del carrito = ${cartItem.isShippingAvailable}`);
         return cartItem.isShippingAvailable === true;
       });
-    };
 
-    const updateShippingAvailability = () => {
-      const hasShipping = hasShippingAvailableInCart();
       console.log(`🚚 Actualización de envío disponible: ${hasShipping}`);
       setCanUseHomeDelivery(hasShipping);
     };
