@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
 import { useConfigContext } from '../../contexts/ConfigContextProvider';
 import { useCurrencyContext } from '../../contexts/CurrencyContextProvider';
@@ -10,7 +9,6 @@ import CouponSearch from './CouponSearch';
 import styles from './CheckoutDetails.module.css';
 
 const CheckoutDetails = ({ activeAddressId, updateCheckoutStatus, timer }) => {
-  const navigate = useNavigate();
   const { 
     cart: cartFromContext, 
     cartDetails: { totalAmount: totalAmountFromContext },

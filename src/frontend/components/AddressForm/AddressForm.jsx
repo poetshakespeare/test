@@ -1,6 +1,5 @@
 import { SERVICE_TYPES, ToastType, COUNTRY_CODES } from '../../constants/constants';
 import { useConfigContext } from '../../contexts/ConfigContextProvider';
-import { useCurrencyContext } from '../../contexts/CurrencyContextProvider';
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
 import { useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
@@ -19,41 +18,6 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
   const SANTIAGO_ZONES = storeConfig.zones || [];
 
   const isEditing = !!isEditingAndData;
-
-  // FUNCIÓN MEJORADA PARA VERIFICAR ENVÍO DISPONIBLE CON SINCRONIZACIÓN EN TIEMPO REAL
-  const hasShippingAvailableInCart = () => {
-    // 1. Obtener productos actualizados desde localStorage (configuración del admin)
-    const savedConfig = localStorage.getItem('adminStoreConfig');
-    let adminProducts = [];
-    
-    if (savedConfig) {
-      try {
-        const parsedConfig = JSON.parse(savedConfig);
-        adminProducts = parsedConfig.products || [];
-      } catch (error) {
-        console.error('Error al cargar productos del admin:', error);
-      }
-    }
-
-    // 2. Verificar cada producto en el carrito
-    return cart.some(cartItem => {
-      // Extraer el ID del producto (sin el color)
-      const productId = cartItem._id.split('#')[0] || cartItem._id;
-      
-      // Buscar el producto en la configuración del admin (datos más actualizados)
-      const adminProduct = adminProducts.find(p => p._id === productId);
-      
-      // Si encontramos el producto en la configuración del admin, usar esos datos
-      if (adminProduct) {
-        console.log(`🔍 Producto ${adminProduct.name}: envío disponible = ${adminProduct.isShippingAvailable}`);
-        return adminProduct.isShippingAvailable === true;
-      }
-      
-      // Si no está en la configuración del admin, usar los datos del carrito
-      console.log(`⚠️ Producto ${cartItem.name}: usando datos del carrito = ${cartItem.isShippingAvailable}`);
-      return cartItem.isShippingAvailable === true;
-    });
-  };
 
   // ESTADO REACTIVO PARA DETECTAR CAMBIOS EN TIEMPO REAL
   const [canUseHomeDelivery, setCanUseHomeDelivery] = useState(false);

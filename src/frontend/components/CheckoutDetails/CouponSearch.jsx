@@ -162,7 +162,6 @@ const CouponSearch = ({ activeCoupon, updateActiveCoupon }) => {
       couponFound.minCartPriceRequired <= totalAmountFromContext;
 
     if (couponFound && !isCouponAvailable) {
-      const currency = getCurrentCurrency();
       toastHandler(
         ToastType.Error, 
         `Compra por encima de ${formatPriceWithCode(couponFound.minCartPriceRequired)} para usar este cupón`
