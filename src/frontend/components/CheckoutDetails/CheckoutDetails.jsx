@@ -248,8 +248,8 @@ const CheckoutDetails = ({
             // Para escritorio: ventana popup centrada
             const width = 800;
             const height = 600;
-            const left = (screen.width - width) / 2;
-            const top = (screen.height - height) / 2;
+            const left = (window.screen.width - width) / 2;
+            const top = (window.screen.height - height) / 2;
             windowFeatures = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,${windowFeatures}`;
           }
           
@@ -311,7 +311,7 @@ const CheckoutDetails = ({
         if (i === urls.length - 1 && !success) {
           try {
             // Método de emergencia: copiar al portapapeles y mostrar instrucciones
-            const emergencyMessage = `WhatsApp: ${phoneNumber}\n\nMensaje:\n${decodeURIComponent(encodedMessage)}`;
+            const emergencyMessage = `WhatsApp: ${cleanPhone}\n\nMensaje:\n${message}`;
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
               await navigator.clipboard.writeText(emergencyMessage);
