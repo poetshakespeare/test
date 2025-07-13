@@ -29,12 +29,11 @@ const Checkout = () => {
     if (isCartEmpty && !isCheckoutSuccess) {
       navigate('/products');
     }
-  }, [isCartEmpty, isCheckoutSuccess, navigate]);
+  }, [isCartEmpty]);
 
   useEffect(() => {
-    const currentTimer = timer.current;
     return () => {
-      clearTimeout(currentTimer);
+      clearTimeout(timer.current);
     };
   }, []);
 

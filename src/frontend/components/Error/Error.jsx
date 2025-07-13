@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Error.module.css';
+import errorImg from '../../assets/jethalal-error.png';
 
 const Error = ({ errorText }) => {
   return (
@@ -8,7 +9,7 @@ const Error = ({ errorText }) => {
       <h3>{errorText}</h3>
 
       <div className={styles.imgContainer}>
-        <div className={styles.errorIcon}>❌</div>
+        <img src={errorImg} alt='error' />
       </div>
 
       <Link to='/' className='btn btn-padding-desktop'>

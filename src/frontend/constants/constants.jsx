@@ -1,7 +1,5 @@
-import { AiFillLinkedin, AiOutlineTwitter, AiFillHdd } from 'react-icons/ai';
-import { MdContactPhone } from 'react-icons/md';
-import { SiFacebook } from 'react-icons/si';
-import { RiDownloadCloudFill } from 'react-icons/ri';
+import { AiFillGithub, AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
+import { v4 as uuid } from 'uuid';
 
 export const FOOTER_LINKS = [
   {
@@ -16,23 +14,8 @@ export const FOOTER_LINKS = [
   },
   {
     id: 3,
-    icon: <MdContactPhone />,
-    url: 'https://yeroshop.vercel.app/profile',
-  },
-  {
-    id: 4,
-    icon: <SiFacebook />,
-    url: 'https://www.facebook.com/yeroshop.oficial',
-  },
-  {
-    id: 5,
-    icon: <AiFillHdd />,
-    url: 'https://yeroshop.vercel.app/products',
-  },
-  {
-    id: 6,
-    icon: <RiDownloadCloudFill />,
-    url: 'https://yeroshop.vercel.app',
+    icon: <AiFillGithub />,
+    url: 'https://www.facebook.com/tvalacarta',
   },
 ];
 

@@ -1,4 +1,5 @@
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
+import styles from './OrderPage.module.css';
 
 const Order = () => {
   const { orderDetails: orderDetailsFromContext } = useAllProductsContext();
