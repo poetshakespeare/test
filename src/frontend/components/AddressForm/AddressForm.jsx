@@ -9,7 +9,6 @@ import Price from '../Price';
 import styles from './AddressForm.module.css';
 import {
   toastHandler,
-  validateEmptyTextInput,
 } from '../../utils/utils';
 
 const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
@@ -17,7 +16,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
     useAllProductsContext();
 
   const { storeConfig } = useConfigContext();
-  const { formatPrice } = useCurrencyContext();
+  const { formatPriceWithCode } = useCurrencyContext();
   const SANTIAGO_ZONES = storeConfig.zones || [];
 
   const isEditing = !!isEditingAndData;
@@ -95,7 +94,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       window.removeEventListener('forceStoreUpdate', handleConfigUpdate);
       window.removeEventListener('adminConfigChanged', handleConfigUpdate);
     };
-  }, [cart]); // Dependencia del carrito para reaccionar a cambios
+  }, [cart, hasShippingAvailableInCart]); // Dependencia del carrito para reaccionar a cambios
 
   const defaultState = {
     username: '',
@@ -126,7 +125,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
         serviceType: SERVICE_TYPES.PICKUP
       }));
     }
-  }, [canUseHomeDelivery, isEditing]);
+  }, [canUseHomeDelivery, isEditing, inputs.serviceType]);
 
   const [mobileValidation, setMobileValidation] = useState({
     isValid: true,

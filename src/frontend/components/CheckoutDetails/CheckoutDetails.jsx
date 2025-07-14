@@ -30,7 +30,6 @@ const CheckoutDetails = ({
 
   const { storeConfig } = useConfigContext();
   const { formatPriceWithCode, getCurrentCurrency, convertFromCUP } = useCurrencyContext();
-  const STORE_WHATSAPP = storeConfig.storeInfo?.whatsappNumber || '+53 54690878';
   const SANTIAGO_ZONES = storeConfig.zones || [];
 
   const {
@@ -183,7 +182,7 @@ const CheckoutDetails = ({
   };
 
   // FUNCIÓN MEJORADA PARA INTENTAR ABRIR WHATSAPP CON MÚLTIPLES MÉTODOS
-  const tryOpenWhatsApp = async (urls, orderNumber) => {
+  const tryOpenWhatsApp = async (urls, orderNumber, phoneNumber) => {
     const device = detectDevice();
     let success = false;
     
@@ -311,7 +310,7 @@ const CheckoutDetails = ({
         if (i === urls.length - 1 && !success) {
           try {
             // Método de emergencia: copiar al portapapeles y mostrar instrucciones
-            const emergencyMessage = `WhatsApp: ${cleanPhone}\n\nMensaje:\n${message}`;
+            const emergencyMessage = `WhatsApp: ${phoneNumber}\n\nPor favor contacta manualmente para completar tu pedido.`;
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
               await navigator.clipboard.writeText(emergencyMessage);
@@ -340,7 +339,7 @@ const CheckoutDetails = ({
     
     console.log('🚀 Iniciando envío a WhatsApp...');
     console.log('📱 Dispositivo:', device);
-    console.log('📞 Número de WhatsApp:', STORE_WHATSAPP);
+    console.log('📞 Número de WhatsApp:', storeConfig.storeInfo?.whatsappNumber || '+53 54690878');
     
     let message = `🛒 *NUEVO PEDIDO #${orderNumber}*\n\n`;
     message += `---------------------------------------------------------------\n`;
@@ -428,13 +427,13 @@ const CheckoutDetails = ({
     message += `🏪 *Yero Shop!*\n`;
     message += `"La tienda online de compras hecha a tu medida" ✨\n`;
     message += `📍 Santiago de Cuba, Cuba\n`;
-    message += `📱 WhatsApp: ${STORE_WHATSAPP}\n`;
+    message += `📱 WhatsApp: ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'}\n`;
     message += `🌐 Tienda online: https://yeroshop.vercel.app\n\n`;
     message += `¡Gracias por confiar en nosotros! 🙏\n`;
     message += `Su satisfacción es nuestra prioridad 💯`;
 
     // Generar URLs según el dispositivo
-    const whatsappUrls = generateWhatsAppURL(message, STORE_WHATSAPP);
+    const whatsappUrls = generateWhatsAppURL(message, storeConfig.storeInfo?.whatsappNumber || '+53 54690878');
     
     // Mostrar notificación específica según el dispositivo
     if (device.isIOS) {
@@ -454,7 +453,7 @@ const CheckoutDetails = ({
     }
     
     // Intentar abrir WhatsApp con múltiples métodos
-    const success = await tryOpenWhatsApp(whatsappUrls, orderNumber);
+    const success = await tryOpenWhatsApp(whatsappUrls, orderNumber, storeConfig.storeInfo?.whatsappNumber || '+53 54690878');
     
     if (success) {
       console.log('✅ WhatsApp abierto exitosamente');
@@ -463,10 +462,10 @@ const CheckoutDetails = ({
       console.log('❌ No se pudo abrir WhatsApp automáticamente');
       
       // Fallback: mostrar información manual
-      let fallbackMessage = `📱 Por favor, abre WhatsApp manualmente y contacta a ${STORE_WHATSAPP} con el pedido #${orderNumber}`;
+      let fallbackMessage = `📱 Por favor, abre WhatsApp manualmente y contacta a ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'} con el pedido #${orderNumber}`;
       
       if (device.isDesktop) {
-        fallbackMessage = `💻 Por favor, abre WhatsApp Web (web.whatsapp.com) o la aplicación de escritorio y contacta a ${STORE_WHATSAPP} con el pedido #${orderNumber}`;
+        fallbackMessage = `💻 Por favor, abre WhatsApp Web (web.whatsapp.com) o la aplicación de escritorio y contacta a ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'} con el pedido #${orderNumber}`;
       }
       
       toastHandler(ToastType.Warn, fallbackMessage);
@@ -474,8 +473,8 @@ const CheckoutDetails = ({
       // Copiar número al portapapeles como ayuda adicional
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(STORE_WHATSAPP);
-          toastHandler(ToastType.Info, `📋 Número de WhatsApp copiado: ${STORE_WHATSAPP}`);
+          await navigator.clipboard.writeText(storeConfig.storeInfo?.whatsappNumber || '+53 54690878');
+          toastHandler(ToastType.Info, `📋 Número de WhatsApp copiado: ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'}`);
         }
       } catch (error) {
         console.log('No se pudo copiar al portapapeles:', error);

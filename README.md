@@ -13,11 +13,11 @@
 
 ## **Enlace en vivo :**
 
-[Yero Shop!](https://yero-shop.vercel.app/)
+[Yero Shop!](https://yeroshop.vercel.app/)
 
 ## **DEMO**
 
-<a href="https://yero-shop.vercel.app/>
+<a href="https://yeroshop.vercel.app/>
     <p>Yero Shop! App 📱 - Watch Video</p>
     <img style="max-width:300px;" src="">
   </a>

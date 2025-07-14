@@ -1,4 +1,0 @@
-Quiero que corrijas una vez que se toque la opción Realizar Pedido por WhatsApp que si se pueda enviar el mensaje al WhatsApp del dueño de la tienda que dicho numero de móvil ya esta en el codigo fuente de la tienda en todos los dispositivos tablet, moviles, laptop, pc que usen sistema operativo Windows, Linux, MacOS, Android, iOS. Y en todos los navegadores web de dichos dispositivos y dichos sistemas operativos mencionados anteriormente.
-
-
-quiero revises el codigo fuente y si queda algún otro error por favor corrígelo para que la tienda funcione bien
