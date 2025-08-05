@@ -341,17 +341,34 @@ const CheckoutDetails = ({
     console.log('📱 Dispositivo:', device);
     console.log('📞 Número de WhatsApp:', storeConfig.storeInfo?.whatsappNumber || '+53 54690878');
     
-    let message = `🛒 *NUEVO PEDIDO #${orderNumber}*\n\n`;
-    message += `---------------------------------------------------------------\n`;
+    // CATÁLOGO PROFESIONAL CON IMAGEN DE LA TIENDA
+    let message = `🏪 *YERO SHOP!* - Tu tienda online de confianza\n`;
+    message += `📸 Imagen del catálogo: https://f005.backblazeb2.com/file/120000/Yero+Shop/lovepik.png\n\n`;
+    
+    // Separador visual profesional
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `🛍️ *CATÁLOGO DIGITAL PROFESIONAL* 🛍️\n`;
+    message += `═══════════════════════════════════════════════════════════════\n\n`;
+    
+    // Número de orden con diseño moderno y animado
+    message += `✨ ═══════════════════════════════════ ✨\n`;
+    message += `🎯 *NUEVO PEDIDO*\n`;
+    message += `🔥 *#${orderNumber}* 🔥\n`;
+    message += `✨ ═══════════════════════════════════ ✨\n\n`;
+    
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `👤 *INFORMACIÓN DEL CLIENTE*\n`;
-    message += `---------------------------------------------------------------\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `📝 *Nombre Completo:* ${firstName} ${lastName}\n`;
     message += `📧 *Correo Electrónico:* ${email}\n`;
     message += `💱 *Moneda seleccionada:* ${currency.flag} ${currency.name} (${currency.code})\n\n`;
     
     // Información del servicio con mejor formato
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `🚚 *DETALLES DE ENTREGA*\n`;
-    message += `---------------------------------------------------------------\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `👤 *Nombre Completo del Cliente:* ${selectedAddress.username}\n`;
+    message += `📱 *Número de Móvil del Cliente:* ${selectedAddress.mobile}\n`;
     
     if (selectedAddress.serviceType === SERVICE_TYPES.HOME_DELIVERY) {
       const zoneName = SANTIAGO_ZONES.find(z => z.id === selectedAddress.zone)?.name;
@@ -369,11 +386,12 @@ const CheckoutDetails = ({
       }
     }
     
-    message += `📞 *Teléfono de contacto:* ${selectedAddress.mobile}\n\n`;
+    message += `\n`;
     
     // Productos con iconos y mejor formato
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `🛍️ *PRODUCTOS SOLICITADOS*\n`;
-    message += `──────────────────────────────────────────────────────────────\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     cartFromContext.forEach((item, index) => {
       const productIcon = getProductIcon(item.category);
       const colorHex = item.colors[0]?.color || '#000000';
@@ -384,12 +402,13 @@ const CheckoutDetails = ({
       message += `   📊 *Cantidad:* ${item.qty} unidad${item.qty > 1 ? 'es' : ''}\n`;
       message += `   💵 *Precio unitario:* ${formatPriceWithCode(item.price)}\n`;
       message += `   💰 *Subtotal:* ${formatPriceWithCode(subtotal)}\n`;
-      message += `   ─────────────────────────────────────────────────────────\n`;
+      message += `   ═══════════════════════════════════════════════════════\n`;
     });
     
     // Resumen financiero profesional
+    message += `\n═══════════════════════════════════════════════════════════════\n`;
     message += `\n💳 *RESUMEN FINANCIERO*\n`;
-    message += `──────────────────────────────────────────────────────────────\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `🛍️ *Subtotal productos:* ${formatPriceWithCode(totalAmountFromContext)}\n`;
     
     if (activeCoupon) {
@@ -400,13 +419,15 @@ const CheckoutDetails = ({
       message += `🚚 *Costo de entrega:* ${formatPriceWithCode(deliveryCost)}\n`;
     }
     
-    message += `───────────────────────────────────────────────────────────────\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `💰 *TOTAL A PAGAR: ${formatPriceWithCode(finalPriceToPay)}*\n`;
     message += `💱 *Moneda: ${currency.flag} ${currency.name} (${currency.code})*\n`;
-    message += `───────────────────────────────────────────────────────────────\n\n`;
+    message += `═══════════════════════════════════════════════════════════════\n\n`;
     
     // Información adicional profesional
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `📅 *Fecha y hora del pedido:*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `${new Date().toLocaleString('es-CU', {
       weekday: 'long',
       year: 'numeric',
@@ -417,20 +438,39 @@ const CheckoutDetails = ({
       timeZone: 'America/Havana'
     })}\n\n`;
     
+    // Número de orden destacado al final
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `🎯 *NÚMERO DE PEDIDO PARA REFERENCIA:*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `🌟 ═══════════════════════════════════ 🌟\n`;
+    message += `🔥 *#${orderNumber}* 🔥\n`;
+    message += `🌟 ═══════════════════════════════════ 🌟\n\n`;
+    
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `📋 *Instrucciones importantes:*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `• Confirme la disponibilidad de los productos\n`;
     message += `• Verifique la dirección de entrega\n`;
     message += `• Coordine horario de entrega/recogida\n`;
     message += `• Mantenga este número de pedido para referencia\n`;
     message += `• Los precios están en ${currency.name} (${currency.code})\n\n`;
     
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `🏪 *INFORMACIÓN DE LA TIENDA*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `🏪 *Yero Shop!*\n`;
     message += `"La tienda online de compras hecha a tu medida" ✨\n`;
     message += `📍 Santiago de Cuba, Cuba\n`;
     message += `📱 WhatsApp: ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'}\n`;
     message += `🌐 Tienda online: https://yeroshop.vercel.app\n\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `🙏 *MENSAJE DE AGRADECIMIENTO*\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
     message += `¡Gracias por confiar en nosotros! 🙏\n`;
-    message += `Su satisfacción es nuestra prioridad 💯`;
+    message += `Su satisfacción es nuestra prioridad 💯\n`;
+    message += `═══════════════════════════════════════════════════════════════\n`;
+    message += `📸 Ver catálogo completo: https://f005.backblazeb2.com/file/120000/Yero+Shop/lovepik.png\n`;
+    message += `═══════════════════════════════════════════════════════════════`;
 
     // Generar URLs según el dispositivo
     const whatsappUrls = generateWhatsAppURL(message, storeConfig.storeInfo?.whatsappNumber || '+53 54690878');

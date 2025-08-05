@@ -169,6 +169,18 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  animation: whatsappPulse 3s ease-in-out infinite;
+}
+
+@keyframes whatsappPulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6);
+    transform: scale(1.02);
+  }
 }
 
 .orderBtn::before {
@@ -186,6 +198,7 @@
   background: linear-gradient(135deg, #128C7E, #25D366);
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6);
+  animation: none;
 }
 
 .orderBtn:hover:not(:disabled)::before {

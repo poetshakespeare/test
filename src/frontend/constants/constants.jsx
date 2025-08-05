@@ -1,4 +1,5 @@
-import { AiFillGithub, AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
+import { AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
+import { MdOutlineFacebook } from 'react-icons/md';
 import { v4 as uuid } from 'uuid';
 
 export const FOOTER_LINKS = [
@@ -14,7 +15,7 @@ export const FOOTER_LINKS = [
   },
   {
     id: 3,
-    icon: <AiFillGithub />,
+    icon: <MdOutlineFacebook />,
     url: 'https://www.facebook.com/tvalacarta',
   },
 ];
