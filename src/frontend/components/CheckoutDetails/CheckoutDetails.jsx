@@ -365,14 +365,20 @@ const CheckoutDetails = ({
       message += `🏠 *Dirección:* ${selectedAddress.addressInfo}\n`;
       message += `👤 *¿Quién recibe el pedido?:* ${selectedAddress.receiverName}\n`;
       message += `📞 *Teléfono de quien recibe:* ${selectedAddress.receiverPhone}\n`;
-      message += `💰 *Costo de entrega:* ${formatPriceWithCode(deliveryCost)}\n`;
     } else {
       message += `📦 *Modalidad:* Recoger en tienda\n`;
       message += `🏪 *Ubicación:* Reparto Nuevo Vista Alegre, Santiago de Cuba\n`;
       message += `📍 *Coordenadas:* 20.039585, -75.849663\n`;
-      message += `🗺️ *Google Maps:* https://www.google.com/maps/place/20%C2%B002'22.5%22N+75%C2%B050'58.8%22W/@20.0394604,-75.8495414,180m\n`;
-      message += `🍎 *Apple Maps:* https://maps.apple.com/?q=20.039585,-75.849663\n`;
-      message += `🚗 *Waze:* https://waze.com/ul?q=20.039585,-75.849663\n`;
+      
+      // Agregar información de distancia si está disponible
+      if (selectedAddress.distanceMessage) {
+        message += `\n${selectedAddress.distanceMessage}`;
+      } else {
+        message += `🗺️ *Google Maps:* https://www.google.com/maps/place/20%C2%B002'22.5%22N+75%C2%B050'58.8%22W/@20.0394604,-75.8495414,180m\n`;
+        message += `🍎 *Apple Maps:* https://maps.apple.com/?q=20.039585,-75.849663\n`;
+        message += `🚗 *Waze:* https://waze.com/ul?q=20.039585,-75.849663\n`;
+      }
+      
       if (selectedAddress.additionalInfo) {
         message += `📝 *Info adicional:* ${selectedAddress.additionalInfo}\n`;
       }
@@ -401,18 +407,19 @@ const CheckoutDetails = ({
     message += `\n--------------------------------------------\n`;
     message += `💳 *RESUMEN FINANCIERO*\n`;
     message += `--------------------------------------------\n`;
-    message += `🛍️ Subtotal productos: ${formatPriceWithCode(totalAmountFromContext)}\n`;
+    message += `🛍️ *Subtotal productos:* ${formatPriceWithCode(totalAmountFromContext)}\n`;
     
     if (activeCoupon) {
-      message += `🎫 Descuento aplicado (${activeCoupon.couponCode} - ${activeCoupon.discountPercent}%): -${formatPriceWithCode(Math.abs(priceAfterCouponApplied))}\n`;
+      message += `🎫 *Descuento aplicado (${activeCoupon.couponCode} - ${activeCoupon.discountPercent}%):* -${formatPriceWithCode(Math.abs(priceAfterCouponApplied))}\n`;
     }
     
     if (deliveryCost > 0) {
-      message += `🚚 Costo de entrega: ${formatPriceWithCode(deliveryCost)}\n`;
+      message += `🚚 *Costo de entrega:* ${formatPriceWithCode(deliveryCost)}\n`;
     }
     
     message += `--------------------------------------------\n`;
     message += `💰 *TOTAL A PAGAR: ${formatPriceWithCode(finalPriceToPay)}*\n`;
+    message += `💱 *Moneda:* ${getCurrentCurrency().flag} ${getCurrentCurrency().name} (${getCurrentCurrency().code})\n`;
     message += `--------------------------------------------\n\n`;
     
     // FECHA Y HORA
