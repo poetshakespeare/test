@@ -8,6 +8,7 @@ import {
 } from '../constants/constants';
 import confetti from 'canvas-confetti';
 import { faker } from '@faker-js/faker';
+import { COUNTRY_CODES } from '../constants/constants';
 
 export const calculateDiscountPercent = (discountPrice, originalPrice) => {
   const percent = Math.floor(
@@ -144,4 +145,27 @@ export const generateOrderNumber = () => {
   const timestamp = Date.now().toString().slice(-6);
   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
   return `ORD${timestamp}${random}`;
+};
+
+// Función para validar email
+export const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.trim());
+};
+
+// Función para validar número móvil según código de país
+export const validateMobile = (countryCode, number) => {
+  if (!number || !number.trim()) {
+    return false;
+  }
+
+  const cleanNumber = number.replace(/[^\d]/g, '');
+  const country = COUNTRY_CODES.find(c => c.code === countryCode);
+  
+  if (!country) {
+    return false;
+  }
+
+  const length = cleanNumber.length;
+  return length >= country.minLength && length <= country.maxLength;
 };

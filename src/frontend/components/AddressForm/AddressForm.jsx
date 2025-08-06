@@ -11,8 +11,7 @@ import styles from './AddressForm.module.css';
 import {
   toastHandler,
   validateEmail,
-  validateMobile,
-  SANTIAGO_ZONES
+  validateMobile
 } from '../../utils/utils';
 
 const AddressForm = ({ 
