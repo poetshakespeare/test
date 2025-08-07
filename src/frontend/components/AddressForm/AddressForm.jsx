@@ -149,6 +149,17 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
     message: ''
   });
 
+  // Manejar cambio de método de pago
+  const handlePaymentMethodChange = (paymentData) => {
+    setPaymentMethodData(paymentData);
+    setInputs(prev => ({
+      ...prev,
+      paymentMethod: paymentData.method,
+      bankTransferFee: paymentData.fee,
+      totalWithPaymentMethod: paymentData.total
+    }));
+  };
+
   // Función para validar número móvil
   const validateMobileNumber = (countryCode, number) => {
     const country = COUNTRY_CODES.find(c => c.code === countryCode);
@@ -508,15 +519,4 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
     </div>
   );
 };
-
-  // Manejar cambio de método de pago
-  const handlePaymentMethodChange = (paymentData) => {
-    setPaymentMethodData(paymentData);
-    setInputs(prev => ({
-      ...prev,
-      paymentMethod: paymentData.method,
-      bankTransferFee: paymentData.fee,
-      totalWithPaymentMethod: paymentData.total
-    }));
-  };
 export default AddressForm;
