@@ -1,0 +1,275 @@
+.storeLocationContainer {
+  background: linear-gradient(135deg, var(--green-50), var(--green-100));
+  border: 2px solid var(--green-300);
+  border-radius: var(--borderRadius);
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.locationHeader {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--green-200);
+}
+
+.locationHeader h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--green-dark);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.locationHeader p {
+  margin: 0;
+  color: var(--green-dark);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mapContainer {
+  margin-bottom: 1.5rem;
+  border-radius: var(--borderRadius);
+  overflow: hidden;
+  box-shadow: var(--shadow-3);
+  border: 3px solid var(--green-300);
+}
+
+.storeInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--green-200);
+}
+
+.storeDetails h5 {
+  margin: 0 0 0.75rem 0;
+  color: var(--green-dark);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.storeDetails p {
+  margin: 0.25rem 0;
+  color: var(--grey-700);
+  font-size: 0.9rem;
+}
+
+.coordinates h6 {
+  margin: 0 0 0.5rem 0;
+  color: var(--green-dark);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.coordinates p {
+  margin: 0.25rem 0;
+  color: var(--grey-700);
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+  background: var(--grey-100);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.userLocationSection {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--green-200);
+}
+
+.locationActions {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.locationBtn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.locationBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-3);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.distanceInfo {
+  text-align: center;
+  padding: 1rem;
+  background: var(--primary-50);
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--primary-200);
+}
+
+.distanceInfo h6 {
+  margin: 0 0 1rem 0;
+  color: var(--primary-700);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.distanceDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.distanceNumber {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-600);
+  background: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--primary-300);
+  box-shadow: var(--shadow-2);
+}
+
+.distanceText {
+  color: var(--primary-700);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.distanceWarning {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: var(--borderRadius);
+  border: 2px solid #f59e0b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.mapLinks {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--green-200);
+}
+
+.mapLinks h6 {
+  margin: 0 0 1rem 0;
+  color: var(--green-dark);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.linkButtons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.mapLink {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: var(--transition);
+  border-radius: var(--borderRadius);
+}
+
+.mapLink:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-3);
+}
+
+.instructions {
+  padding: 1rem;
+  background: var(--white);
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--green-200);
+}
+
+.instructions h6 {
+  margin: 0 0 1rem 0;
+  color: var(--green-dark);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.instructions ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: none;
+}
+
+.instructions li {
+  margin-bottom: 0.5rem;
+  color: var(--grey-700);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  position: relative;
+}
+
+.instructions li::before {
+  content: '•';
+  color: var(--green-medium);
+  font-weight: 700;
+  position: absolute;
+  left: -1rem;
+}
+
+@media screen and (max-width: 768px) {
+  .storeInfo {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .linkButtons {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .mapLink {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .distanceNumber {
+    font-size: 1.5rem;
+  }
+
+  .locationHeader h4 {
+    font-size: 1.1rem;
+  }
+
+  .locationHeader p {
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .storeLocationContainer {
+    padding: 1rem;
+  }
+
+  .linkButtons {
+    grid-template-columns: 1fr;
+  }
+
+  .mapLink {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+  }
+}

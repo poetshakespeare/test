@@ -14,22 +14,16 @@
 }
 
 .disabledProduct::before {
-  content: 'Agotado';
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--overlay-bcg);
+  background: url('https://f005.backblazeb2.com/file/120000/Yero+Shop/agotado.png') center/cover, var(--overlay-bcg);
   z-index: 2;
   cursor: not-allowed;
-  color: var(--white);
-  letter-spacing: var(--letterSpacing);
-  font-size: 1.25rem;
-  display: grid;
-  place-items: center;
   border-radius: var(--borderRadius);
-  font-weight: 600;
 }
 
 .imgContainer {

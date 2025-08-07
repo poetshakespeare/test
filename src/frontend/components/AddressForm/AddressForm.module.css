@@ -220,6 +220,18 @@
   margin-bottom: 0;
 }
 
+.pickupSection {
+  background: var(--green-50);
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  border: 2px solid var(--green-200);
+  margin: 1rem 0;
+}
+
+.pickupSection .formGroup:last-child {
+  margin-bottom: 0;
+}
+
 .formBtnContainer {
   padding: 1.5rem 2rem;
   border-top: 2px solid var(--grey-200);
@@ -284,89 +296,6 @@
   background: var(--primary-500);
 }
 
-.pickupSection {
-  background: var(--primary-50);
-  padding: 1.5rem;
-  border-radius: var(--borderRadius);
-  border: 2px solid var(--primary-200);
-  margin: 1rem 0;
-}
-
-.storeLocationCard {
-  background: var(--white);
-  padding: 1.5rem;
-  border-radius: var(--borderRadius);
-  border: 2px solid var(--primary-300);
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-2);
-}
-
-.storeLocationCard h4 {
-  margin: 0 0 1rem 0;
-  color: var(--primary-600);
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-.storeAddress {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: var(--primary-50);
-  border-radius: var(--borderRadius);
-  border: 1px solid var(--primary-200);
-}
-
-.storeAddress p {
-  margin: 0.5rem 0;
-  color: var(--primary-700);
-  font-size: 0.95rem;
-}
-
-.mapContainer {
-  margin: 1rem 0;
-  border-radius: var(--borderRadius);
-  overflow: hidden;
-  box-shadow: var(--shadow-2);
-}
-
-.mapLinks {
-  margin-top: 1rem;
-}
-
-.mapLinks h5 {
-  margin: 0 0 0.75rem 0;
-  color: var(--primary-600);
-  font-size: 1rem;
-  text-align: center;
-}
-
-.mapButtons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.75rem;
-}
-
-.mapButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem;
-  background: var(--primary-500);
-  color: var(--white);
-  text-decoration: none;
-  border-radius: var(--borderRadius);
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: var(--transition);
-  text-align: center;
-}
-
-.mapButton:hover {
-  background: var(--primary-600);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-3);
-}
-
 @media screen and (max-width: 768px) {
   .formOverlay {
     padding: 0.5rem;
@@ -421,19 +350,6 @@
 
   .serviceOption {
     padding: 0.75rem;
-  }
-
-  .mapButtons {
-    grid-template-columns: 1fr;
-  }
-
-  .storeLocationCard {
-    padding: 1rem;
-  }
-
-  .pickupSection {
-    padding: 1rem;
-    margin: 0.5rem 0;
   }
 }
 

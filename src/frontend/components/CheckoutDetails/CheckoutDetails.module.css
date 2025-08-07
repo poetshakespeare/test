@@ -128,6 +128,142 @@
   border-bottom: none;
 }
 
+.bankFeeAmount {
+  color: #f59e0b !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem;
+  animation: feeHighlight 2s ease-in-out infinite;
+}
+
+@keyframes feeHighlight {
+  0%, 100% { 
+    color: #f59e0b;
+    text-shadow: none;
+  }
+  50% { 
+    color: #d97706;
+    text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  }
+}
+
+/* Indicador visual del método de pago */
+.paymentMethodIndicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  margin: 1rem 0;
+  border: 3px solid;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.paymentMethodIndicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s;
+}
+
+.paymentMethodIndicator:hover::before {
+  left: 100%;
+}
+
+.paymentMethodIndicator.cash {
+  background: linear-gradient(135deg, var(--green-50), var(--green-100));
+  border-color: var(--green-400);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.paymentMethodIndicator.bankTransfer {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-color: #f59e0b;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  animation: bankTransferPulse 3s ease-in-out infinite;
+}
+
+@keyframes bankTransferPulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+    transform: scale(1.01);
+  }
+}
+
+.paymentIcon {
+  font-size: 2.5rem;
+  animation: iconBounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+@keyframes iconBounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
+}
+
+.paymentText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.paymentLabel {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--grey-600);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.paymentName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary-700);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cash .paymentName {
+  color: var(--green-dark);
+}
+
+.bankTransfer .paymentName {
+  color: #92400e;
+}
+
+.paymentFee {
+  font-size: 0.85rem;
+  color: #92400e;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  width: fit-content;
+  animation: feeGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes feeGlow {
+  from {
+    background: rgba(245, 158, 11, 0.2);
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
+  }
+  to {
+    background: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+  }
+}
+
 .totalPrice {
   composes: totalPrice from '../../pages/CartPage/CartPage.module.css';
   background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
@@ -405,6 +541,18 @@
   .titleIcon {
     font-size: 2.5rem;
   }
+
+  .paymentMethodIndicator {
+    flex-direction: row;
+  }
+
+  .paymentIcon {
+    font-size: 3rem;
+  }
+
+  .paymentName {
+    font-size: 1.3rem;
+  }
 }
 
 @media screen and (min-width: 1024px) {
@@ -429,4 +577,29 @@
 
 .couponText {
   margin: 0;
+}
+
+/* Responsive para método de pago */
+@media screen and (max-width: 768px) {
+  .paymentMethodIndicator {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .paymentIcon {
+    font-size: 2rem;
+  }
+
+  .paymentText {
+    align-items: center;
+  }
+
+  .paymentName {
+    font-size: 1.1rem;
+  }
+
+  .paymentFee {
+    align-self: center;
+  }
 }

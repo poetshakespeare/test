@@ -1,41 +1,143 @@
 import { SERVICE_TYPES, ToastType, COUNTRY_CODES } from '../../constants/constants';
 import { useConfigContext } from '../../contexts/ConfigContextProvider';
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 import FormRow from '../FormRow';
 import Price from '../Price';
-import DistanceCalculator from '../DistanceCalculator/DistanceCalculator';
-import { generateDistanceMessage } from '../../utils/distanceCalculator';
+import StoreLocationMap from '../StoreLocationMap/StoreLocationMap';
+import PaymentMethodSelector from '../PaymentMethodSelector/PaymentMethodSelector';
 import styles from './AddressForm.module.css';
 import {
   toastHandler,
-  validateEmail,
-  validateMobile
 } from '../../utils/utils';
 
-const AddressForm = ({ 
-  isEditing = false, 
-  isEditingAndData = null, 
-  onClose, 
-  onAddressAdded 
-}) => {
-  const { config } = useConfigContext();
-  const { allProducts } = useAllProductsContext();
+const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
+  const { addAddressDispatch, timedMainPageLoader, editAddressDispatch, cart } =
+    useAllProductsContext();
 
-  const [inputs, setInputs] = useState({
-    name: '',
-    email: '',
-    countryCode: '+56',
-    mobile: '',
-    address: '',
-    serviceType: SERVICE_TYPES.PICKUP,
-    zone: '',
-    receiverName: '',
-    receiverCountryCode: '+56',
-    receiverPhone: '',
-    additionalInfo: ''
+  const { storeConfig } = useConfigContext();
+  const SANTIAGO_ZONES = storeConfig.zones || [];
+
+  const isEditing = !!isEditingAndData;
+
+  // ESTADO REACTIVO PARA DETECTAR CAMBIOS EN TIEMPO REAL
+  const [canUseHomeDelivery, setCanUseHomeDelivery] = useState(false);
+
+  // ESTADO PARA EL MÉTODO DE PAGO
+  const [paymentMethodData, setPaymentMethodData] = useState({
+    method: 'cash',
+    fee: 0,
+    total: 0
   });
+  // EFECTO PARA ACTUALIZAR EL ESTADO CUANDO CAMBIE EL CARRITO O LA CONFIGURACIÓN
+  useEffect(() => {
+    // FUNCIÓN MEJORADA PARA VERIFICAR ENVÍO DISPONIBLE CON SINCRONIZACIÓN EN TIEMPO REAL
+    const hasShippingAvailableInCart = () => {
+      // 1. Obtener productos actualizados desde localStorage (configuración del admin)
+      const savedConfig = localStorage.getItem('adminStoreConfig');
+      let adminProducts = [];
+      
+      if (savedConfig) {
+        try {
+          const parsedConfig = JSON.parse(savedConfig);
+          adminProducts = parsedConfig.products || [];
+        } catch (error) {
+          console.error('Error al cargar productos del admin:', error);
+        }
+      }
+
+      // 2. Verificar cada producto en el carrito
+      return cart.some(cartItem => {
+        // Extraer el ID del producto (sin el color)
+        const productId = cartItem._id.split('#')[0] || cartItem._id;
+        
+        // Buscar el producto en la configuración del admin (datos más actualizados)
+        const adminProduct = adminProducts.find(p => p._id === productId);
+        
+        // Si encontramos el producto en la configuración del admin, usar esos datos
+        if (adminProduct) {
+          console.log(`🔍 Producto ${adminProduct.name}: envío disponible = ${adminProduct.isShippingAvailable}`);
+          return adminProduct.isShippingAvailable === true;
+        }
+        
+        // Si no está en la configuración del admin, usar los datos del carrito
+        console.log(`⚠️ Producto ${cartItem.name}: usando datos del carrito = ${cartItem.isShippingAvailable}`);
+        return cartItem.isShippingAvailable === true;
+      });
+    };
+
+    const updateShippingAvailability = () => {
+      const hasShipping = hasShippingAvailableInCart();
+      console.log(`🚚 Actualización de envío disponible: ${hasShipping}`);
+      setCanUseHomeDelivery(hasShipping);
+    };
+
+    // Actualizar inmediatamente
+    updateShippingAvailability();
+
+    // Escuchar eventos de actualización de productos
+    const handleProductsUpdate = () => {
+      console.log('📡 Evento de actualización de productos detectado en AddressForm');
+      setTimeout(updateShippingAvailability, 100); // Pequeño delay para asegurar que los datos estén actualizados
+    };
+
+    const handleConfigUpdate = () => {
+      console.log('📡 Evento de actualización de configuración detectado en AddressForm');
+      setTimeout(updateShippingAvailability, 100);
+    };
+
+    // Agregar listeners para eventos de sincronización
+    window.addEventListener('productsUpdated', handleProductsUpdate);
+    window.addEventListener('productsConfigUpdated', handleProductsUpdate);
+    window.addEventListener('forceStoreUpdate', handleConfigUpdate);
+    window.addEventListener('adminConfigChanged', handleConfigUpdate);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('productsUpdated', handleProductsUpdate);
+      window.removeEventListener('productsConfigUpdated', handleProductsUpdate);
+      window.removeEventListener('forceStoreUpdate', handleConfigUpdate);
+      window.removeEventListener('adminConfigChanged', handleConfigUpdate);
+    };
+  }, [cart]); // Dependencia del carrito para reaccionar a cambios
+
+  const defaultState = {
+    username: '',
+    mobile: '',
+    countryCode: '+53', // Cuba por defecto
+    serviceType: canUseHomeDelivery ? SERVICE_TYPES.HOME_DELIVERY : SERVICE_TYPES.PICKUP,
+    zone: '',
+    addressInfo: '',
+    receiverName: '',
+    receiverPhone: '',
+    receiverCountryCode: '+53', // Cuba por defecto
+    additionalInfo: '',
+    paymentMethod: 'cash',
+    bankTransferFee: 0,
+    totalWithPaymentMethod: 0,
+  };
+
+  const [inputs, setInputs] = useState(
+    isEditing ? {
+      ...isEditingAndData,
+      countryCode: isEditingAndData.countryCode || '+53',
+      receiverCountryCode: isEditingAndData.receiverCountryCode || '+53',
+      paymentMethod: isEditingAndData.paymentMethod || 'cash',
+      bankTransferFee: isEditingAndData.bankTransferFee || 0,
+      totalWithPaymentMethod: isEditingAndData.totalWithPaymentMethod || 0,
+    } : defaultState
+  );
+
+  // ACTUALIZAR EL TIPO DE SERVICIO CUANDO CAMBIE LA DISPONIBILIDAD DE ENVÍO
+  useEffect(() => {
+    if (!isEditing && !canUseHomeDelivery && inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY) {
+      setInputs(prev => ({
+        ...prev,
+        serviceType: SERVICE_TYPES.PICKUP
+      }));
+    }
+  }, [canUseHomeDelivery, isEditing, inputs.serviceType]);
 
   const [mobileValidation, setMobileValidation] = useState({
     isValid: true,
@@ -47,408 +149,374 @@ const AddressForm = ({
     message: ''
   });
 
-  const [distanceInfo, setDistanceInfo] = useState(null);
-
   // Función para validar número móvil
   const validateMobileNumber = (countryCode, number) => {
-    if (!number.trim()) {
-      return { isValid: false, message: 'El número móvil es requerido' };
+    const country = COUNTRY_CODES.find(c => c.code === countryCode);
+    if (!country) return { isValid: false, message: 'Código de país no válido' };
+
+    const cleanNumber = number.replace(/\D/g, '');
+    
+    if (cleanNumber.length < country.minLength) {
+      return { 
+        isValid: false, 
+        message: `Número muy corto. Mínimo ${country.minLength} dígitos para ${country.country}` 
+      };
     }
     
-    const isValid = validateMobile(countryCode, number);
-    return {
-      isValid,
-      message: isValid ? '' : 'Número móvil inválido'
-    };
+    if (cleanNumber.length > country.maxLength) {
+      return { 
+        isValid: false, 
+        message: `Número muy largo. Máximo ${country.maxLength} dígitos para ${country.country}` 
+      };
+    }
+
+    return { isValid: true, message: '' };
   };
 
-  // Efecto para cargar datos en modo edición
-  useEffect(() => {
-    if (isEditing && isEditingAndData) {
-      const data = isEditingAndData;
-      
-      // Separar código de país del número móvil
-      const mobileMatch = data.mobile?.match(/^(\+\d+)\s(.+)$/);
-      const countryCode = mobileMatch ? mobileMatch[1] : '+56';
-      const mobile = mobileMatch ? mobileMatch[2] : data.mobile || '';
+  const handleInputChange = (e) => {
+    const targetEle = e.target;
+    const targetEleName = targetEle.name;
+    let elementValue = targetEle.value;
 
-      // Separar código de país del teléfono del receptor
-      const receiverPhoneMatch = data.receiverPhone?.match(/^(\+\d+)\s(.+)$/);
-      const receiverCountryCode = receiverPhoneMatch ? receiverPhoneMatch[1] : '+56';
-      const receiverPhone = receiverPhoneMatch ? receiverPhoneMatch[2] : data.receiverPhone || '';
-
-      setInputs({
-        name: data.name || '',
-        email: data.email || '',
-        countryCode,
-        mobile,
-        address: data.address || '',
-        serviceType: data.serviceType || SERVICE_TYPES.PICKUP,
-        zone: data.zone || '',
-        receiverName: data.receiverName || '',
-        receiverCountryCode,
-        receiverPhone,
-        additionalInfo: data.additionalInfo || ''
-      });
-
-      // Validar móvil inicial
-      const validation = validateMobileNumber(countryCode, mobile);
-      setMobileValidation(validation);
-
-      // Validar teléfono receptor si existe
-      if (receiverPhone) {
-        const receiverValidation = validateMobileNumber(receiverCountryCode, receiverPhone);
-        setReceiverPhoneValidation(receiverValidation);
-      }
+    if (targetEle.type === 'number') {
+      elementValue = isNaN(targetEle.valueAsNumber)
+        ? ''
+        : targetEle.valueAsNumber;
     }
-  }, [isEditing, isEditingAndData]);
 
-  const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target;
-    
-    setInputs(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setInputs({
+      ...inputs,
+      [targetEleName]: elementValue,
+    });
 
-    // Validación en tiempo real para móvil
-    if (name === 'mobile' || name === 'countryCode') {
-      const mobile = name === 'mobile' ? value : inputs.mobile;
-      const countryCode = name === 'countryCode' ? value : inputs.countryCode;
-      const validation = validateMobileNumber(countryCode, mobile);
+    // Validar números móviles en tiempo real
+    if (targetEleName === 'mobile' || targetEleName === 'countryCode') {
+      const validation = validateMobileNumber(
+        targetEleName === 'countryCode' ? elementValue : inputs.countryCode,
+        targetEleName === 'mobile' ? elementValue : inputs.mobile
+      );
       setMobileValidation(validation);
     }
 
-    // Validación en tiempo real para teléfono receptor
-    if (name === 'receiverPhone' || name === 'receiverCountryCode') {
-      const receiverPhone = name === 'receiverPhone' ? value : inputs.receiverPhone;
-      const receiverCountryCode = name === 'receiverCountryCode' ? value : inputs.receiverCountryCode;
-      
-      if (receiverPhone.trim()) {
-        const validation = validateMobileNumber(receiverCountryCode, receiverPhone);
-        setReceiverPhoneValidation(validation);
-      } else {
-        setReceiverPhoneValidation({ isValid: true, message: '' });
-      }
+    if (targetEleName === 'receiverPhone' || targetEleName === 'receiverCountryCode') {
+      const validation = validateMobileNumber(
+        targetEleName === 'receiverCountryCode' ? elementValue : inputs.receiverCountryCode,
+        targetEleName === 'receiverPhone' ? elementValue : inputs.receiverPhone
+      );
+      setReceiverPhoneValidation(validation);
     }
+  };
 
-    // Limpiar validación del teléfono receptor cuando se cambia el tipo de servicio
-    if (name === 'serviceType' && value !== SERVICE_TYPES.HOME_DELIVERY) {
-      setReceiverPhoneValidation({ isValid: true, message: '' });
-    }
-  }, [inputs.mobile, inputs.countryCode, inputs.receiverPhone, inputs.receiverCountryCode]);
-
-  const handleSubmit = (e) => {
+  const handleSubmitForm = async (e) => {
     e.preventDefault();
+
+    // Validaciones según el tipo de servicio
+    let requiredFields = ['username', 'mobile', 'serviceType'];
     
-    // Validaciones finales
+    if (inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY) {
+      requiredFields = [...requiredFields, 'zone', 'addressInfo', 'receiverName', 'receiverPhone'];
+    }
+
+    // Validar campos requeridos
+    for (const field of requiredFields) {
+      if (!inputs[field] || (typeof inputs[field] === 'string' && !inputs[field].trim())) {
+        toastHandler(ToastType.Error, 'Por favor completa todos los campos obligatorios');
+        return;
+      }
+    }
+
+    // Validar números móviles
     if (!mobileValidation.isValid) {
-      toastHandler('error', 'Por favor corrige el número móvil');
+      toastHandler(ToastType.Error, `Número móvil inválido: ${mobileValidation.message}`);
       return;
     }
 
     if (inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY && !receiverPhoneValidation.isValid) {
-      toastHandler('error', 'Por favor corrige el teléfono del receptor');
+      toastHandler(ToastType.Error, `Teléfono del receptor inválido: ${receiverPhoneValidation.message}`);
       return;
     }
 
-    if (!inputs.name.trim()) {
-      toastHandler('error', 'El nombre es requerido');
-      return;
-    }
+    await timedMainPageLoader();
 
-    if (!inputs.email.trim() || !validateEmail(inputs.email)) {
-      toastHandler('error', 'Email inválido');
-      return;
-    }
-
-    if (!inputs.address.trim()) {
-      toastHandler('error', 'La dirección es requerida');
-      return;
-    }
-
-    if (inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY && !inputs.zone) {
-      toastHandler('error', 'Debes seleccionar una zona para delivery');
-      return;
-    }
-
-    if (inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY && !inputs.receiverName.trim()) {
-      toastHandler('error', 'El nombre del receptor es requerido para delivery');
-      return;
-    }
-
-    const formData = getFormDataWithDistance();
-    onAddressAdded(formData);
-    onClose();
-    
-    const message = isEditing ? 'Dirección actualizada exitosamente' : 'Dirección agregada exitosamente';
-    toastHandler('success', message);
-  };
-
-  const handleCancel = () => {
-    onClose();
-    setInputs({
-      name: '',
-      email: '',
-      countryCode: '+56',
-      mobile: '',
-      address: '',
-      serviceType: SERVICE_TYPES.PICKUP,
-      zone: '',
-      receiverName: '',
-      receiverCountryCode: '+56',
-      receiverPhone: '',
-      additionalInfo: ''
-    });
-    setMobileValidation({ isValid: true, message: '' });
-    setReceiverPhoneValidation({ isValid: true, message: '' });
-  };
-
-  const handleDistanceCalculated = (tripData) => {
-    setDistanceInfo(tripData);
-  };
-
-  const isHomeDelivery = inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY;
-  const selectedCountry = COUNTRY_CODES.find(c => c.code === inputs.countryCode);
-  const selectedReceiverCountry = COUNTRY_CODES.find(c => c.code === inputs.receiverCountryCode);
-
-  // Agregar información de distancia a los datos del formulario
-  const getFormDataWithDistance = () => {
-    const baseData = {
+    const addressData = {
       ...inputs,
       addressId: isEditing ? isEditingAndData.addressId : uuid(),
       mobile: `${inputs.countryCode} ${inputs.mobile}`,
       receiverPhone: inputs.receiverPhone ? `${inputs.receiverCountryCode} ${inputs.receiverPhone}` : '',
       deliveryCost: inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY 
         ? SANTIAGO_ZONES.find(zone => zone.id === inputs.zone)?.cost || 0
-        : 0
+        : 0,
+      paymentMethod: paymentMethodData.method,
+      bankTransferFee: paymentMethodData.fee,
+      totalWithPaymentMethod: paymentMethodData.total
     };
 
-    // Si es pickup y tenemos información de distancia, agregarla
-    if (inputs.serviceType === SERVICE_TYPES.PICKUP && distanceInfo) {
-      baseData.distanceInfo = distanceInfo;
-      baseData.distanceMessage = generateDistanceMessage(distanceInfo);
+    if (isAdding) {
+      addAddressDispatch(addressData);
     }
 
-    return baseData;
+    if (isEditing) {
+      editAddressDispatch(addressData);
+    }
+
+    closeForm();
   };
+
+  const handleReset = () => {
+    setInputs(defaultState);
+    setMobileValidation({ isValid: true, message: '' });
+    setReceiverPhoneValidation({ isValid: true, message: '' });
+  };
+
+  const isHomeDelivery = inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY;
+  const selectedCountry = COUNTRY_CODES.find(c => c.code === inputs.countryCode);
+  const selectedReceiverCountry = COUNTRY_CODES.find(c => c.code === inputs.receiverCountryCode);
 
   return (
     <div className={styles.formOverlay}>
-      <div className={styles.formContainer}>
+      <form
+        onClick={(e) => e.stopPropagation()}
+        className={styles.form}
+        onSubmit={handleSubmitForm}
+      >
         <div className={styles.formHeader}>
-          <h2>{isEditing ? '✏️ Editar Dirección' : '📍 Nueva Dirección'}</h2>
-          <button 
-            type="button" 
-            className={styles.closeButton}
-            onClick={handleCancel}
-          >
+          <h3>{isEditing ? 'Editar Dirección' : 'Nueva Dirección'}</h3>
+          <button type="button" className={styles.closeBtn} onClick={closeForm}>
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formContent}>
-            <FormRow>
-              <div className={styles.formGroup}>
-                <label htmlFor='name'>👤 Nombre completo *</label>
+        <div className={styles.formContent}>
+          <FormRow
+            text='Nombre Completo'
+            type='text'
+            name='username'
+            id='username'
+            placeholder='Tu nombre completo'
+            value={inputs.username}
+            handleChange={handleInputChange}
+          />
+
+          <div className={styles.formGroup}>
+            <label htmlFor='mobile'>📱 Número de Móvil *</label>
+            <div className={styles.phoneContainer}>
+              <select
+                name='countryCode'
+                value={inputs.countryCode}
+                onChange={handleInputChange}
+                className={styles.countrySelect}
+                required
+              >
+                {COUNTRY_CODES.map(country => (
+                  <option key={country.code} value={country.code}>
+                    {country.flag} {country.code} {country.country}
+                  </option>
+                ))}
+              </select>
+              <input
+                type='tel'
+                name='mobile'
+                id='mobile'
+                placeholder='Número móvil'
+                value={inputs.mobile}
+                onChange={handleInputChange}
+                className={`form-input ${!mobileValidation.isValid ? styles.invalidInput : ''}`}
+                required
+              />
+            </div>
+            {selectedCountry && (
+              <div className={styles.countryInfo}>
+                <span className={styles.flag}>{selectedCountry.flag}</span>
+                <span>{selectedCountry.country} - {selectedCountry.minLength}-{selectedCountry.maxLength} dígitos</span>
+              </div>
+            )}
+            {!mobileValidation.isValid && (
+              <div className={styles.errorMessage}>{mobileValidation.message}</div>
+            )}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor='serviceType'>🚚 Tipo de Servicio *</label>
+            <div className={styles.serviceTypeContainer}>
+              <div className={styles.serviceOption}>
                 <input
-                  type='text'
-                  name='name'
-                  id='name'
-                  className='form-input'
-                  placeholder='Tu nombre completo'
-                  value={inputs.name}
+                  type="radio"
+                  id="homeDelivery"
+                  name="serviceType"
+                  value={SERVICE_TYPES.HOME_DELIVERY}
+                  checked={inputs.serviceType === SERVICE_TYPES.HOME_DELIVERY}
+                  onChange={handleInputChange}
+                  disabled={!canUseHomeDelivery}
+                />
+                <label htmlFor="homeDelivery" className={!canUseHomeDelivery ? styles.disabledOption : ''}>
+                  🚚 Entrega a domicilio
+                  {!canUseHomeDelivery && (
+                    <span className={styles.lockIcon}>🔒</span>
+                  )}
+                </label>
+              </div>
+              <div className={styles.serviceOption}>
+                <input
+                  type="radio"
+                  id="pickup"
+                  name="serviceType"
+                  value={SERVICE_TYPES.PICKUP}
+                  checked={inputs.serviceType === SERVICE_TYPES.PICKUP}
+                  onChange={handleInputChange}
+                />
+                <label htmlFor="pickup">
+                  🏪 Pedido para recoger en el local
+                </label>
+              </div>
+            </div>
+            {!canUseHomeDelivery && (
+              <div className={styles.shippingWarning}>
+                <span>⚠️ Los productos en tu carrito no tienen envío disponible. Solo puedes recoger en el local.</span>
+                <small>💡 Los cambios del panel de administración se aplican en tiempo real</small>
+              </div>
+            )}
+          </div>
+
+          {isHomeDelivery ? (
+            <div className={styles.deliverySection}>
+              <div className={styles.formGroup}>
+                <label htmlFor='zone'>📍 ¿Dónde la entregamos? - Selecciona la zona de tu dirección *</label>
+                <select
+                  className='form-select'
+                  name='zone'
+                  id='zone'
+                  onChange={handleInputChange}
+                  value={inputs.zone}
+                  required
+                >
+                  <option value='' disabled>
+                    Selecciona tu zona en Santiago de Cuba:
+                  </option>
+                  {SANTIAGO_ZONES.map((zone) => (
+                    <option key={zone.id} value={zone.id}>
+                      {zone.name} - <Price amount={zone.cost} />
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor='addressInfo'>🏠 Dirección Completa *</label>
+                <textarea
+                  name='addressInfo'
+                  id='addressInfo'
+                  className='form-textarea'
+                  placeholder='Dirección completa (calle, número, entre calles, referencias, etc.)'
+                  value={inputs.addressInfo}
                   onChange={handleInputChange}
                   required
                 />
               </div>
 
-              <div className={styles.formGroup}>
-                <label htmlFor='email'>📧 Email *</label>
-                <input
-                  type='email'
-                  name='email'
-                  id='email'
-                  className='form-input'
-                  placeholder='tu@email.com'
-                  value={inputs.email}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </FormRow>
+              <FormRow
+                text='👤 ¿Quién recibe el pedido? *'
+                type='text'
+                name='receiverName'
+                id='receiverName'
+                placeholder='Nombre de quien recibe'
+                value={inputs.receiverName}
+                handleChange={handleInputChange}
+              />
 
-            <FormRow>
               <div className={styles.formGroup}>
-                <label htmlFor='mobile'>📱 Móvil *</label>
-                <div className={styles.phoneInputContainer}>
+                <label htmlFor='receiverPhone'>📞 Teléfono de quien recibe *</label>
+                <div className={styles.phoneContainer}>
                   <select
-                    name='countryCode'
-                    value={inputs.countryCode}
+                    name='receiverCountryCode'
+                    value={inputs.receiverCountryCode}
                     onChange={handleInputChange}
                     className={styles.countrySelect}
+                    required
                   >
                     {COUNTRY_CODES.map(country => (
                       <option key={country.code} value={country.code}>
-                        {country.flag} {country.code}
+                        {country.flag} {country.code} {country.country}
                       </option>
                     ))}
                   </select>
                   <input
                     type='tel'
-                    name='mobile'
-                    id='mobile'
-                    className={`form-input ${!mobileValidation.isValid ? styles.inputError : ''}`}
-                    placeholder={selectedCountry?.placeholder || 'Número móvil'}
-                    value={inputs.mobile}
+                    name='receiverPhone'
+                    id='receiverPhone'
+                    placeholder='Teléfono del receptor'
+                    value={inputs.receiverPhone}
                     onChange={handleInputChange}
+                    className={`form-input ${!receiverPhoneValidation.isValid ? styles.invalidInput : ''}`}
                     required
                   />
                 </div>
-                {!mobileValidation.isValid && (
-                  <span className={styles.errorMessage}>{mobileValidation.message}</span>
+                {selectedReceiverCountry && (
+                  <div className={styles.countryInfo}>
+                    <span className={styles.flag}>{selectedReceiverCountry.flag}</span>
+                    <span>{selectedReceiverCountry.country} - {selectedReceiverCountry.minLength}-{selectedReceiverCountry.maxLength} dígitos</span>
+                  </div>
+                )}
+                {!receiverPhoneValidation.isValid && (
+                  <div className={styles.errorMessage}>{receiverPhoneValidation.message}</div>
                 )}
               </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor='address'>🏠 Dirección *</label>
-                <input
-                  type='text'
-                  name='address'
-                  id='address'
-                  className='form-input'
-                  placeholder='Tu dirección completa'
-                  value={inputs.address}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </FormRow>
-
-            <div className={styles.formGroup}>
-              <label htmlFor='serviceType'>🚚 Tipo de servicio *</label>
-              <select
-                name='serviceType'
-                id='serviceType'
-                className='form-select'
-                value={inputs.serviceType}
-                onChange={handleInputChange}
-                required
-              >
-                <option value={SERVICE_TYPES.PICKUP}>🏃‍♂️ Retiro en tienda</option>
-                <option value={SERVICE_TYPES.HOME_DELIVERY}>🚚 Delivery a domicilio</option>
-              </select>
             </div>
+          ) : (
+           <div className={styles.pickupSection}>
+             <StoreLocationMap />
+            <div className={styles.formGroup}>
+              <label htmlFor='additionalInfo'>💬 ¿Quieres aclararnos algo?</label>
+              <textarea
+                name='additionalInfo'
+                id='additionalInfo'
+                className='form-textarea'
+                placeholder='Información adicional sobre tu pedido (opcional)'
+                value={inputs.additionalInfo}
+                onChange={handleInputChange}
+              />
+            </div>
+           </div>
+          )}
+        </div>
 
-            {isHomeDelivery && (
-              <div className={styles.deliverySection}>
-                <div className={styles.formGroup}>
-                  <label htmlFor='zone'>📍 Zona de delivery *</label>
-                  <select
-                    name='zone'
-                    id='zone'
-                    className='form-select'
-                    value={inputs.zone}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value=''>Selecciona una zona</option>
-                    {SANTIAGO_ZONES.map(zone => (
-                      <option key={zone.id} value={zone.id}>
-                        {zone.name} - <Price amount={zone.cost} />
-                      </option>
-                    ))}
-                  </select>
-                </div>
+        {/* Selector de Método de Pago */}
+        <PaymentMethodSelector 
+          onPaymentMethodChange={handlePaymentMethodChange}
+          selectedMethod={inputs.paymentMethod}
+        />
 
-                <FormRow>
-                  <div className={styles.formGroup}>
-                    <label htmlFor='receiverName'>👤 Nombre del receptor *</label>
-                    <input
-                      type='text'
-                      name='receiverName'
-                      id='receiverName'
-                      className='form-input'
-                      placeholder='Nombre de quien recibe'
-                      value={inputs.receiverName}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
+        <div className={styles.formBtnContainer}>
+          <button 
+            type='submit' 
+            className={`btn btn-primary ${styles.primaryButton}`}
+            disabled={!mobileValidation.isValid || (isHomeDelivery && !receiverPhoneValidation.isValid)}
+          >
+            {isEditing ? '✅ Actualizar' : '➕ Agregar'}
+          </button>
 
-                  <div className={styles.formGroup}>
-                    <label htmlFor='receiverPhone'>📱 Teléfono del receptor</label>
-                    <div className={styles.phoneInputContainer}>
-                      <select
-                        name='receiverCountryCode'
-                        value={inputs.receiverCountryCode}
-                        onChange={handleInputChange}
-                        className={styles.countrySelect}
-                      >
-                        {COUNTRY_CODES.map(country => (
-                          <option key={country.code} value={country.code}>
-                            {country.flag} {country.code}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type='tel'
-                        name='receiverPhone'
-                        id='receiverPhone'
-                        className={`form-input ${!receiverPhoneValidation.isValid ? styles.inputError : ''}`}
-                        placeholder={selectedReceiverCountry?.placeholder || 'Teléfono del receptor'}
-                        value={inputs.receiverPhone}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    {!receiverPhoneValidation.isValid && (
-                      <span className={styles.errorMessage}>{receiverPhoneValidation.message}</span>
-                    )}
-                  </div>
-                </FormRow>
-              </div>
-            )}
-
-            {!isHomeDelivery && (
-              <div className={styles.pickupSection}>
-                <div className={styles.formGroup}>
-                  <label htmlFor='additionalInfo'>💬 ¿Quieres aclararnos algo?</label>
-                  <textarea
-                    name='additionalInfo'
-                    id='additionalInfo'
-                    className='form-textarea'
-                    placeholder='Información adicional sobre tu pedido (opcional)'
-                    value={inputs.additionalInfo}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <DistanceCalculator onDistanceCalculated={handleDistanceCalculated} />
-              </div>
-            )}
-          </div>
-
-          <div className={styles.formBtnContainer}>
-            <button 
-              type='submit' 
-              className={`btn btn-primary ${styles.primaryButton}`}
-              disabled={!mobileValidation.isValid || (isHomeDelivery && !receiverPhoneValidation.isValid)}
-            >
-              {isEditing ? '✅ Actualizar' : '➕ Agregar'}
+          <div className={styles.secondaryButtons}>
+            <button onClick={handleReset} type='button' className='btn btn-hipster'>
+              🔄 Restablecer
             </button>
-            <button 
-              type='button' 
-              className={`btn btn-secondary ${styles.secondaryButton}`}
-              onClick={handleCancel}
-            >
+
+            <button type='button' className='btn btn-danger' onClick={closeForm}>
               ❌ Cancelar
             </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };
 
+  // Manejar cambio de método de pago
+  const handlePaymentMethodChange = (paymentData) => {
+    setPaymentMethodData(paymentData);
+    setInputs(prev => ({
+      ...prev,
+      paymentMethod: paymentData.method,
+      bankTransferFee: paymentData.fee,
+      totalWithPaymentMethod: paymentData.total
+    }));
+  };
 export default AddressForm;

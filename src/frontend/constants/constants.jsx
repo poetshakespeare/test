@@ -1,4 +1,4 @@
-import { AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
+import { AiFillGithub, AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
 import { MdOutlineFacebook } from 'react-icons/md';
 import { v4 as uuid } from 'uuid';
 
@@ -10,13 +10,13 @@ export const FOOTER_LINKS = [
   },
   {
     id: 2,
-    icon: <AiFillLinkedin />,
-    url: 'https://www.linkedin.com/in/yero-shop-com-a47599373',
+    icon: <MdOutlineFacebook />,
+    url: 'https://www.facebook.com/tvalacarta',
   },
   {
     id: 3,
-    icon: <MdOutlineFacebook />,
-    url: 'https://www.facebook.com/tvalacarta',
+    icon: <AiFillLinkedin />,
+    url: 'https://www.linkedin.com/in/yero-shop-com-a47599373',
   },
 ];
 
@@ -121,17 +121,17 @@ export const SANTIAGO_ZONES = [
   {
     "id": "vista_alegre",
     "name": "Vista Alegre",
-    "cost": 500
+    "cost": 300
   },
   {
     "id": "sueno",
     "name": "Sueño",
-    "cost": 300
+    "cost": 250
   },
   {
     "id": "san_pedrito",
     "name": "San Pedrito",
-    "cost": 250
+    "cost": 150
   },
   {
     "id": "altamira",
@@ -141,7 +141,7 @@ export const SANTIAGO_ZONES = [
   {
     "id": "micro_9",
     "name": "Micro 7, 8 , 9",
-    "cost": 300
+    "cost": 150
   },
   {
     "id": "alameda",
@@ -161,12 +161,12 @@ export const SANTIAGO_ZONES = [
   {
     "id": "ciudamar",
     "name": "Distrito José Martí",
-    "cost": 200
+    "cost": 150
   },
   {
     "id": "marimon",
     "name": "Marimon",
-    "cost": 150
+    "cost": 100
   },
   {
     "id": "los_cangrejitos",
@@ -206,7 +206,7 @@ export const SANTIAGO_ZONES = [
   {
     "id": "los_pinos",
     "name": "Los Pinos",
-    "cost": 300
+    "cost": 200
   }
 ];
 
@@ -258,7 +258,7 @@ export const DEFAULT_STORE_CONFIG = {
   "storeName": "Yero Shop!",
   "whatsappNumber": "+53 54690878",
   "storeAddress": "Santiago de Cuba, Cuba",
-  "lastModified": "2025-07-13T12:35:26.656Z",
+  "lastModified": "2025-08-06T08:19:50.172Z",
   "version": "1.0.0"
 };
 
@@ -318,21 +318,21 @@ export const CURRENCIES = {
     name: 'Dólar Estadounidense',
     symbol: '$',
     flag: '🇺🇸',
-    rate: 385,
+    rate: 395,
   },
   EUR: {
     code: 'EUR',
     name: 'Euro',
     symbol: '€',
     flag: '🇪🇺',
-    rate: 425,
+    rate: 445,
   },
   MLC: {
     code: 'MLC',
     name: 'Moneda Libremente Convertible',
     symbol: 'MLC',
     flag: '🏦',
-    rate: 232,
+    rate: 220,
   },
 };
 

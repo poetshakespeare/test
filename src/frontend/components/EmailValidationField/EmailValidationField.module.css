@@ -1,0 +1,239 @@
+.emailField {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.helpText {
+  display: block;
+  color: var(--grey-500);
+  font-weight: normal;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputContainer input {
+  flex: 1;
+  padding-right: 3rem;
+  transition: var(--transition);
+}
+
+.inputContainer input.validating {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
+}
+
+.inputContainer input.valid {
+  border-color: var(--green-medium);
+  box-shadow: 0 0 0 2px rgba(16, 153, 16, 0.1);
+}
+
+.inputContainer input.invalid {
+  border-color: var(--red-medium);
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.1);
+}
+
+.providerIndicator {
+  position: absolute;
+  right: 3.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--white);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--grey-200);
+  font-size: 0.8rem;
+  z-index: 2;
+}
+
+.providerIcon {
+  font-size: 1rem;
+}
+
+.providerName {
+  color: var(--primary-600);
+  font-weight: 500;
+}
+
+.validationIndicator {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  font-size: 1rem;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.successIcon {
+  color: var(--green-medium);
+  font-size: 1rem;
+}
+
+.errorIcon {
+  color: var(--red-medium);
+  font-size: 1rem;
+}
+
+.validationMessage {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: var(--borderRadius);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.successMessage {
+  background: var(--green-light);
+  color: var(--green-dark);
+  border: 1px solid var(--green-medium);
+}
+
+.errorMessage {
+  background: var(--red-light);
+  color: var(--red-dark);
+  border: 1px solid var(--red-medium);
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border: 2px solid var(--primary-200);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-3);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.suggestionsHeader {
+  padding: 0.75rem;
+  background: var(--primary-50);
+  border-bottom: 1px solid var(--primary-200);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-700);
+}
+
+.suggestionItem {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  background: var(--white);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--grey-100);
+}
+
+.suggestionItem:hover {
+  background: var(--primary-50);
+  color: var(--primary-700);
+}
+
+.suggestionItem:last-child {
+  border-bottom: none;
+}
+
+.suggestionIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.suggestionEmail {
+  flex: 1;
+  font-weight: 500;
+  color: var(--grey-800);
+}
+
+.suggestionProvider {
+  font-size: 0.8rem;
+  color: var(--grey-500);
+  background: var(--grey-100);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+}
+
+.providerInfo {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--primary-50);
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--primary-200);
+  font-size: 0.85rem;
+  color: var(--primary-700);
+}
+
+.providerInfo .providerIcon {
+  font-size: 1.2rem;
+}
+
+/* Scrollbar personalizado para sugerencias */
+.suggestions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions::-webkit-scrollbar-track {
+  background: var(--grey-100);
+  border-radius: 3px;
+}
+
+.suggestions::-webkit-scrollbar-thumb {
+  background: var(--primary-300);
+  border-radius: 3px;
+}
+
+.suggestions::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-500);
+}
+
+@media screen and (max-width: 768px) {
+  .providerIndicator {
+    right: 3rem;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .providerIcon {
+    font-size: 0.9rem;
+  }
+
+  .suggestionItem {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .suggestionIcon {
+    font-size: 1rem;
+  }
+
+  .suggestionProvider {
+    font-size: 0.7rem;
+  }
+}

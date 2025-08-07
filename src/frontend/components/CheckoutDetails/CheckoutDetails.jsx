@@ -49,6 +49,9 @@ const CheckoutDetails = ({
     ? (selectedAddress?.deliveryCost || 0)
     : 0;
 
+  // Calcular recargo por método de pago
+  const paymentMethodFee = selectedAddress?.bankTransferFee || 0;
+  const isUsingBankTransfer = selectedAddress?.paymentMethod === 'bank_transfer';
   // Calcular descuento del cupón según la moneda seleccionada
   const priceAfterCouponApplied = activeCoupon
     ? -Math.floor((totalAmountFromContext * activeCoupon.discountPercent) / 100)
@@ -58,7 +61,8 @@ const CheckoutDetails = ({
     totalAmountFromContext +
     deliveryCost +
     CHARGE_AND_DISCOUNT.discount +
-    priceAfterCouponApplied;
+    priceAfterCouponApplied +
+    paymentMethodFee;
 
   const updateActiveCoupon = (couponObjClicked) => {
     setActiveCoupon(couponObjClicked);
@@ -332,100 +336,191 @@ const CheckoutDetails = ({
 
   const sendToWhatsApp = async (orderData) => {
     const orderNumber = generateOrderNumber();
+    const currency = getCurrentCurrency();
     const device = detectDevice();
     
     console.log('🚀 Iniciando envío a WhatsApp...');
     console.log('📱 Dispositivo:', device);
     console.log('📞 Número de WhatsApp:', storeConfig.storeInfo?.whatsappNumber || '+53 54690878');
     
-    // ENCABEZADO PROFESIONAL
-    let message = `🏪 *YERO SHOP!* - Tu tienda online de confianza\n\n`;
+    // FUNCIÓN PARA CONVERTIR CÓDIGO DE COLOR A NOMBRE
+    const getColorName = (colorCode) => {
+      const colorMap = {
+        '#000000': 'Negro',
+        '#ffffff': 'Blanco',
+        '#ff0000': 'Rojo',
+        '#00ff00': 'Verde',
+        '#0000ff': 'Azul',
+        '#ffff00': 'Amarillo',
+        '#ff00ff': 'Magenta',
+        '#00ffff': 'Cian',
+        '#ffa500': 'Naranja',
+        '#800080': 'Púrpura',
+        '#ffc0cb': 'Rosa',
+        '#a52a2a': 'Marrón',
+        '#808080': 'Gris',
+        '#c0c0c0': 'Plata',
+        '#ffd700': 'Dorado',
+        '#008000': 'Verde Oscuro',
+        '#000080': 'Azul Marino',
+        '#800000': 'Granate',
+        '#808000': 'Oliva',
+        '#008080': 'Verde Azulado'
+      };
+      
+      // Buscar color exacto
+      if (colorMap[colorCode.toLowerCase()]) {
+        return colorMap[colorCode.toLowerCase()];
+      }
+      
+      // Si no encuentra el color exacto, intentar aproximación por rangos
+      const hex = colorCode.replace('#', '');
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      
+      // Determinar color dominante
+      if (r > g && r > b) {
+        if (r > 200) return 'Rojo Claro';
+        if (r > 100) return 'Rojo';
+        return 'Rojo Oscuro';
+      } else if (g > r && g > b) {
+        if (g > 200) return 'Verde Claro';
+        if (g > 100) return 'Verde';
+        return 'Verde Oscuro';
+      } else if (b > r && b > g) {
+        if (b > 200) return 'Azul Claro';
+        if (b > 100) return 'Azul';
+        return 'Azul Oscuro';
+      } else if (r === g && g === b) {
+        if (r > 200) return 'Blanco';
+        if (r > 100) return 'Gris';
+        return 'Negro';
+      }
+      
+      return `Color Personalizado (${colorCode})`;
+    };
     
-    // Número de orden con diseño moderno
-    message += `✨ -------------------------------- ✨\n`;
-    message += `🎯 *NUEVO PEDIDO #${orderNumber}* 🔥\n`;
-    message += `✨ -------------------------------- ✨\n\n`;
+    // CATÁLOGO PROFESIONAL CON IMAGEN AUTOMÁTICA
+    let message = `🛍️ *YERO SHOP!* - Tu tienda online de confianza\n\n`;
     
-    message += `--------------------------------------------\n`;
-    message += `👤 *INFORMACIÓN DEL CLIENTE*\n`;
-    message += `--------------------------------------------\n`;
-    message += `📝 *Nombre:* ${firstName} ${lastName}\n`;
-    message += `📧 *Email:* ${email}\n`;
-    message += `📱 *Móvil:* ${selectedAddress.mobile}\n\n`;
+    message += `------------------------\n`;
+    message += `📋 *INFORMACIÓN DEL CLIENTE*\n`;
+    message += `------------------------\n`;
+    message += `👤 *Nombre Completo:* ${firstName} ${lastName}\n`;
+    message += `✉️ *Correo Electrónico:* ${email}\n`;
+    message += `🆔 *Número de Pedido:* #${orderNumber}\n`;
+    message += `💰 *Moneda seleccionada:* ${currency.flag} ${currency.name} (${currency.code})\n\n`;
     
-    // DETALLES DE ENTREGA MEJORADOS Y ORGANIZADOS
-    message += `--------------------------------------------\n`;
-    message += `🚚 *DETALLES DE ENTREGA*\n`;
-    message += `--------------------------------------------\n`;
+    // Información del servicio con mejor formato
+    message += `---------------------\n`;
+    message += `🚛 *DETALLES DE ENTREGA*\n`;
+    message += `---------------------\n`;
+    message += `🧑 *Nombre Completo del Cliente:* ${selectedAddress.username}\n`;
+    message += `📞 *Número de Móvil del Cliente:* ${selectedAddress.mobile}\n`;
     
     if (selectedAddress.serviceType === SERVICE_TYPES.HOME_DELIVERY) {
       const zoneName = SANTIAGO_ZONES.find(z => z.id === selectedAddress.zone)?.name;
-      message += `📦 *Modalidad:* Entrega a domicilio\n`;
-      message += `📍 *Zona:* ${zoneName}\n`;
-      message += `🏠 *Dirección:* ${selectedAddress.addressInfo}\n`;
-      message += `👤 *¿Quién recibe el pedido?:* ${selectedAddress.receiverName}\n`;
-      message += `📞 *Teléfono de quien recibe:* ${selectedAddress.receiverPhone}\n`;
+      message += `🏠 *Modalidad:* Entrega a domicilio\n`;
+      message += `📍 *Zona de entrega:* ${zoneName}\n`;
+      message += `🏘️ *Dirección completa:* ${selectedAddress.addressInfo}\n`;
+      message += `🧑‍🤝‍🧑 *Persona que recibe:* ${selectedAddress.receiverName}\n`;
+      message += `☎️ *Teléfono del receptor:* ${selectedAddress.receiverPhone}\n`;
+      message += `💵 *Costo de entrega:* ${formatPriceWithCode(deliveryCost)}\n`;
     } else {
-      message += `📦 *Modalidad:* Recoger en tienda\n`;
-      message += `🏪 *Ubicación:* Reparto Nuevo Vista Alegre, Santiago de Cuba\n`;
-      message += `📍 *Coordenadas:* 20.039585, -75.849663\n`;
-      
-      // Agregar información de distancia si está disponible
-      if (selectedAddress.distanceMessage) {
-        message += `\n${selectedAddress.distanceMessage}`;
-      } else {
-        message += `🗺️ *Google Maps:* https://www.google.com/maps/place/20%C2%B002'22.5%22N+75%C2%B050'58.8%22W/@20.0394604,-75.8495414,180m\n`;
-        message += `🍎 *Apple Maps:* https://maps.apple.com/?q=20.039585,-75.849663\n`;
-        message += `🚗 *Waze:* https://waze.com/ul?q=20.039585,-75.849663\n`;
-      }
-      
+      message += `🏪 *Modalidad:* Recoger en tienda\n`;
+      message += `🏪 *Ubicación de la tienda:* Yero Shop! - Santiago de Cuba\n`;
+      message += `🗺️ *Coordenadas GPS:* 20.039585, -75.849663\n`;
+      message += `🗺️ *Google Maps:* https://www.google.com/maps/place/20°02'22.5"N+75°50'58.8"W/@20.0394604,-75.8495414,180m\n`;
+      message += `☎️ *Para ubicarnos:* ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'}\n`;
       if (selectedAddress.additionalInfo) {
-        message += `📝 *Info adicional:* ${selectedAddress.additionalInfo}\n`;
+        message += `📄 *Información adicional:* ${selectedAddress.additionalInfo}\n`;
       }
+    }
+    
+    // INFORMACIÓN DEL MÉTODO DE PAGO
+    message += `\n`;
+    message += `---------------------\n`;
+    message += `💳 *MÉTODO DE PAGO*\n`;
+    message += `---------------------\n`;
+    if (isUsingBankTransfer) {
+      message += `🏦 *Modalidad:* Transferencia Bancaria\n`;
+      message += `⚠️ *Recargo aplicado:* +20% sobre productos\n`;
+      message += `💰 *Recargo en ${currency.code}:* ${formatPriceWithCode(paymentMethodFee)}\n`;
+      message += `📋 *Datos bancarios:*\n`;
+      message += `   • Banco: Banco Popular de Ahorro (BPA)\n`;
+      message += `   • Cuenta: 9205-9876-5432-1098\n`;
+      message += `   • Titular: Yero Shop S.A.\n`;
+      message += `   • CI: 12345678901\n`;
+      message += `📝 *Instrucciones:*\n`;
+      message += `   1. Transferir el monto total exacto\n`;
+      message += `   2. Enviar comprobante por WhatsApp\n`;
+      message += `   3. Incluir número de pedido #${orderNumber}\n`;
+      message += `   4. Esperar confirmación antes de recoger\n`;
+    } else {
+      message += `💰 *Modalidad:* Pago en Efectivo\n`;
+      message += `✅ *Sin recargos adicionales*\n`;
+      message += `🏪 *Lugar de pago:* Directamente en la tienda\n`;
+      message += `💵 *Monedas aceptadas:* CUP, USD, EUR, MLC\n`;
     }
     
     message += `\n`;
     
-    // PRODUCTOS ORGANIZADOS Y DETALLADOS
-    message += `--------------------------------------------\n`;
-    message += `🛍️ *PRODUCTOS SOLICITADOS*\n`;
-    message += `--------------------------------------------\n`;
+    // Productos con iconos y mejor formato MEJORADO
+    message += `----------------------\n`;
+    message += `📦 *PRODUCTOS SOLICITADOS*\n`;
+    message += `----------------------\n`;
     cartFromContext.forEach((item, index) => {
       const productIcon = getProductIcon(item.category);
-      const colorHex = item.colors[0]?.color || '#000000';
+      const colorCode = item.colors[0]?.color || '#000000';
+      const colorName = getColorName(colorCode);
       const subtotal = item.price * item.qty;
       
       message += `${index + 1}. ${productIcon} *${item.name}*\n`;
-      message += `    🎨 Color: ${colorHex} | 📊 Cantidad: ${item.qty}\n`;
-      message += `    💵 Precio: ${formatPriceWithCode(item.price)} | 💰 Subtotal: ${formatPriceWithCode(subtotal)}\n`;
-      if (index < cartFromContext.length - 1) {
-        message += `    --------------------------------\n`;
-      }
+      message += `   🎨 *Color:* ${colorName}\n`;
+      message += `   🔢 *Cantidad:* ${item.qty} unidad${item.qty > 1 ? 'es' : ''}\n`;
+      message += `   💲 *Precio unitario:* ${formatPriceWithCode(item.price)}\n`;
+      message += `   💰 *Subtotal:* ${formatPriceWithCode(subtotal)}\n`;
+      message += `   ─────────────────────────────\n`;
     });
     
-    // RESUMEN FINANCIERO ORGANIZADO Y DETALLADO
-    message += `\n--------------------------------------------\n`;
-    message += `💳 *RESUMEN FINANCIERO*\n`;
-    message += `--------------------------------------------\n`;
-    message += `🛍️ *Subtotal productos:* ${formatPriceWithCode(totalAmountFromContext)}\n`;
+    // Resumen financiero profesional MEJORADO Y ORGANIZADO
+    message += `\n---------------------------\n`;
+    message += `💼 *RESUMEN FINANCIERO DETALLADO*\n`;
+    message += `---------------------------\n`;
+    message += `📦 *Subtotal productos:* ${formatPriceWithCode(totalAmountFromContext)}\n`;
     
     if (activeCoupon) {
-      message += `🎫 *Descuento aplicado (${activeCoupon.couponCode} - ${activeCoupon.discountPercent}%):* -${formatPriceWithCode(Math.abs(priceAfterCouponApplied))}\n`;
+      message += `🏷️ *Descuento aplicado:*\n`;
+      message += `   • Cupón: ${activeCoupon.couponCode}\n`;
+      message += `   • Porcentaje: ${activeCoupon.discountPercent}%\n`;
+      message += `   • Ahorro: -${formatPriceWithCode(Math.abs(priceAfterCouponApplied))}\n`;
     }
     
     if (deliveryCost > 0) {
-      message += `🚚 *Costo de entrega:* ${formatPriceWithCode(deliveryCost)}\n`;
+      message += `🚛 *Costo de entrega:* ${formatPriceWithCode(deliveryCost)}\n`;
+    } else {
+      message += `🚛 *Costo de entrega:* GRATIS (Recogida en tienda)\n`;
     }
     
-    message += `--------------------------------------------\n`;
-    message += `💰 *TOTAL A PAGAR: ${formatPriceWithCode(finalPriceToPay)}*\n`;
-    message += `💱 *Moneda:* ${getCurrentCurrency().flag} ${getCurrentCurrency().name} (${getCurrentCurrency().code})\n`;
-    message += `--------------------------------------------\n\n`;
+    if (isUsingBankTransfer && paymentMethodFee > 0) {
+      message += `🏦 *Recargo transferencia bancaria (+20%):* ${formatPriceWithCode(paymentMethodFee)}\n`;
+    }
     
-    // FECHA Y HORA
-    message += `--------------------------------------------\n`;
+    message += `---------------------------\n`;
+    message += `💳 *TOTAL A PAGAR:* ${formatPriceWithCode(finalPriceToPay)}\n`;
+    message += `💰 *Moneda:* ${currency.flag} ${currency.name} (${currency.code})\n`;
+    if (isUsingBankTransfer) {
+      message += `🏦 *Método:* Transferencia Bancaria (incluye recargo del 20%)\n`;
+    } else {
+      message += `💰 *Método:* Pago en Efectivo (sin recargos)\n`;
+    }
+    message += `---------------------------\n\n`;
+    
+    // Información adicional profesional
+    message += `------------------------\n`;
     message += `📅 *FECHA Y HORA DEL PEDIDO*\n`;
-    message += `--------------------------------------------\n`;
+    message += `------------------------\n`;
     message += `${new Date().toLocaleString('es-CU', {
       weekday: 'long',
       year: 'numeric',
@@ -436,24 +531,38 @@ const CheckoutDetails = ({
       timeZone: 'America/Havana'
     })}\n\n`;
     
-    // INSTRUCCIONES
-    message += `--------------------------------------------\n`;
+    // Instrucciones importantes MEJORADAS
+    message += `--------------------------\n`;
     message += `📋 *INSTRUCCIONES IMPORTANTES*\n`;
-    message += `--------------------------------------------\n`;
-    message += `• Confirme la disponibilidad de los productos\n`;
-    message += `• Verifique la dirección de entrega\n`;
-    message += `• Coordine horario de entrega/recogida\n`;
-    message += `• Mantenga este número de pedido: #${orderNumber}\n\n`;
+    message += `--------------------------\n`;
+    message += `✅ *Confirmar disponibilidad* de todos los productos\n`;
+    message += `🏠 *Verificar dirección* de entrega o datos de recogida\n`;
+    message += `🕐 *Coordinar horario* de entrega/recogida conveniente\n`;
+    message += `🆔 *Número de referencia:* #${orderNumber}\n`;
+    message += `💰 *Precios mostrados en:* ${currency.flag} ${currency.name} (${currency.code})\n`;
+    message += `☎️ *Contacto directo:* ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'}\n\n`;
     
-    message += `--------------------------------------------\n`;
-    message += `🏪 *INFORMACIÓN DE LA TIENDA*\n`;
-    message += `--------------------------------------------\n`;
+    message += `-------------------------\n`;
+    message += `🏢 *INFORMACIÓN DE LA TIENDA*\n`;
+    message += `-------------------------\n`;
     message += `🏪 *Yero Shop!*\n`;
-    message += `📍 Reparto Nuevo Vista Alegre, Santiago de Cuba\n`;
-    message += `📱 WhatsApp: ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'}\n`;
-    message += `🌐 Tienda online: https://yeroshop.vercel.app\n`;
-    message += `🗺️ Coordenadas: 20.039585, -75.849663\n\n`;
-    message += `¡Gracias por confiar en nosotros! 🙏`;
+    message += `"La plataforma de comercio detrás de todo" ✨\n`;
+    message += `🏙️ Santiago de Cuba, Cuba\n`;
+    message += `🗺️ Coordenadas: 20.039585, -75.849663\n`;
+    message += `☎️ WhatsApp: ${storeConfig.storeInfo?.whatsappNumber || '+53 54690878'}\n`;
+    message += `🌐 Tienda online: https://yeroshop.vercel.app\n\n`;
+    message += `--------------------------\n`;
+    message += `🙏 *MENSAJE DE AGRADECIMIENTO*\n`;
+    message += `--------------------------\n`;
+    message += `✨ ¡Gracias por elegir Yero Shop! ✨\n\n`;
+    message += `⭐ *Nos sentimos honrados de ser parte de tu experiencia de compra*\n`;
+    message += `🤝 *Tu confianza es nuestro mayor tesoro*\n`;
+    message += `🎯 *Trabajamos cada día para superar tus expectativas*\n`;
+    message += `✅ *Estamos comprometidos con tu satisfacción total*\n`;
+    message += `👥 *Cada cliente es único y especial para nosotros*\n`;
+    message += `🔗 *Construyendo relaciones duraderas, una compra a la vez*\n\n`;
+    message += `🎉 *¡Esperamos verte pronto de nuevo!* 🎉\n`;
+    message += `--------------------------\n\n`;
 
     // Generar URLs según el dispositivo
     const whatsappUrls = generateWhatsAppURL(message, storeConfig.storeInfo?.whatsappNumber || '+53 54690878');
@@ -576,6 +685,14 @@ const CheckoutDetails = ({
           <Price amount={totalAmountFromContext} />
         </div>
 
+        {isUsingBankTransfer && paymentMethodFee > 0 && (
+          <div className={styles.row}>
+            <span>🏦 Recargo transferencia bancaria (+20%)</span>
+            <span className={styles.bankFeeAmount}>
+              +<Price amount={paymentMethodFee} />
+            </span>
+          </div>
+        )}
         {activeCoupon && (
           <div className={styles.row}>
             <div className={styles.couponApplied}>
@@ -605,6 +722,23 @@ const CheckoutDetails = ({
 
       <hr />
 
+      {/* Indicador visual del método de pago */}
+      <div className={`${styles.paymentMethodIndicator} ${isUsingBankTransfer ? styles.bankTransfer : styles.cash}`}>
+        <div className={styles.paymentIcon}>
+          {isUsingBankTransfer ? '🏦' : '💰'}
+        </div>
+        <div className={styles.paymentText}>
+          <span className={styles.paymentLabel}>Método de Pago:</span>
+          <span className={styles.paymentName}>
+            {isUsingBankTransfer ? 'Transferencia Bancaria' : 'Pago en Efectivo'}
+          </span>
+          {isUsingBankTransfer && (
+            <span className={styles.paymentFee}>
+              (+20% recargo incluido)
+            </span>
+          )}
+        </div>
+      </div>
       <div className={`${styles.row} ${styles.totalPrice}`}>
         <span>💰 Precio Total</span>
         <Price amount={finalPriceToPay} />
