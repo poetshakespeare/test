@@ -62,37 +62,6 @@ const BankTransferManager = () => {
   }, [productsFromContext, categoriesFromContext]);
 
   // FUNCIÓN PARA GUARDAR CONFIGURACIÓN DE TRANSFERENCIA BANCARIA
-  const saveBankTransferConfig = (newConfig) => {
-    const savedConfig = localStorage.getItem('adminStoreConfig') || '{}';
-    let config = {};
-    
-    try {
-      config = JSON.parse(savedConfig);
-    } catch (error) {
-      console.error('Error al cargar configuración:', error);
-      config = {};
-    }
-
-    config.bankTransferConfig = {
-      ...newConfig,
-      lastModified: new Date().toISOString()
-    };
-    
-    localStorage.setItem('adminStoreConfig', JSON.stringify(config));
-    
-    // Actualizar en el contexto de configuración
-    saveConfig(config);
-    
-    // Disparar eventos para sincronización en tiempo real
-    window.dispatchEvent(new CustomEvent('bankTransferConfigUpdated', { 
-      detail: { bankTransferConfig: config.bankTransferConfig } 
-    }));
-    
-    window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
-    
-    setHasUnsavedChanges(false);
-    toastHandler(ToastType.Success, '✅ Configuración de transferencia bancaria actualizada en tiempo real');
-  };
 
   // FUNCIÓN PARA ACTUALIZAR PRODUCTOS CON RECARGOS ESPECÍFICOS
   const updateProductsWithSurcharges = (updatedConfig) => {

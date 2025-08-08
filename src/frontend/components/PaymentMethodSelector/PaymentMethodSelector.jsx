@@ -11,7 +11,7 @@ const PaymentMethodSelector = ({
   cartTotal,
   bankTransferSurcharge 
 }) => {
-  const { getCurrentCurrency, formatPriceWithCode } = useCurrencyContext();
+  const { getCurrentCurrency } = useCurrencyContext();
   const { cart: cartFromContext } = useAllProductsContext();
   const currency = getCurrentCurrency();
 
