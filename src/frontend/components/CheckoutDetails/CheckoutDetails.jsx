@@ -105,7 +105,6 @@ const CheckoutDetails = ({
   const handlePaymentMethodChange = (paymentMethod) => {
     setSelectedPaymentMethod(paymentMethod);
     
-    const currency = getCurrentCurrency();
     if (paymentMethod === PAYMENT_TYPES.BANK_TRANSFER) {
       const surchargeAmount = bankTransferSurcharge;
       toastHandler(
