@@ -47,89 +47,6 @@
   width: 1.25rem;
 }
 
-/* Información del método de pago */
-.paymentInfo {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--grey-50), var(--white));
-  border-radius: var(--borderRadius);
-  border: 2px solid var(--primary-200);
-}
-
-.paymentMethod {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  margin-left: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 0.85rem;
-}
-
-.paymentMethod.cash {
-  background: linear-gradient(135deg, var(--green-100), var(--green-200));
-  color: var(--green-dark);
-  border: 2px solid var(--green-400);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-}
-
-.paymentMethod.bankTransfer {
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
-  border: 2px solid #f59e0b;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-  animation: bankTransferGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes bankTransferGlow {
-  from {
-    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-  }
-  to {
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.6);
-  }
-}
-
-.bankFeeInfo {
-  margin: 0.75rem 0 0.5rem 0;
-  padding: 0.75rem;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  border: 2px solid #f59e0b;
-  border-radius: var(--borderRadius);
-  color: #92400e;
-}
-
-.feeAmount {
-  font-weight: 700;
-  margin-left: 0.5rem;
-  color: #d97706;
-  animation: feeFlash 2s ease-in-out infinite;
-}
-
-@keyframes feeFlash {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.totalWithPayment {
-  margin: 0.75rem 0 0 0;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
-  border: 3px solid var(--primary-400);
-  border-radius: var(--borderRadius);
-  color: var(--primary-700);
-  font-weight: 600;
-}
-
-.totalAmount {
-  font-weight: 800;
-  margin-left: 0.5rem;
-  color: var(--primary-800);
-  font-size: 1.1rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
 @media screen and (min-width: 768px) {
   .addressCard {
     margin-bottom: 2rem;
@@ -148,26 +65,5 @@
   .addressCard input {
     height: 1.25rem;
     width: 1.25rem;
-  }
-
-  .paymentInfo {
-    padding: 1.5rem;
-  }
-
-  .paymentMethod {
-    font-size: 0.9rem;
-    padding: 0.6rem 1.2rem;
-  }
-
-  .bankFeeInfo {
-    padding: 1rem;
-  }
-
-  .totalWithPayment {
-    padding: 1.25rem;
-  }
-
-  .totalAmount {
-    font-size: 1.2rem;
   }
 }

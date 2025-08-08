@@ -7,9 +7,11 @@ import {
   LOGIN_TOAST,
   calculateDiscountPercent,
   isPresent,
+  getProductBankTransferInfo,
 } from '../../utils/utils';
 import { AiFillCheckCircle, AiFillStar } from 'react-icons/ai';
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
+import { useCurrencyContext } from '../../contexts/CurrencyContextProvider';
 import { useAuthContext } from '../../contexts/AuthContextProvider';
 
 const SingleProductPage = () => {
@@ -17,6 +19,7 @@ const SingleProductPage = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
+  const { formatPriceWithCode } = useCurrencyContext();
 
   const {
     wishlist: wishlistFromContext,
@@ -98,6 +101,13 @@ const SingleProductPage = () => {
     reviewCount,
     stars,
   } = singleProductData;
+
+  // Obtener información de transferencia bancaria
+  const bankTransferInfo = getProductBankTransferInfo(singleProductData);
+  const bankTransferEnabled = bankTransferInfo.isEnabled;
+  const productBankTransferSurcharge = bankTransferInfo.surchargePercent;
+  const bankTransferAmount = bankTransferInfo.surchargeAmount;
+  const totalWithBankTransfer = bankTransferInfo.totalWithSurcharge;
 
   const discountPercent = calculateDiscountPercent(price, originalPrice);
   const inStock = stock > 0;
@@ -231,6 +241,33 @@ const SingleProductPage = () => {
           <span>Stock Disponible:</span>
           <p>{activeColorObj.colorQuantity}</p>
         </div>
+
+        {bankTransferEnabled && (
+          <div className={styles.bankTransferInfo}>
+            <h4>🏦 Información de Transferencia Bancaria</h4>
+            <div className={styles.bankTransferDetails}>
+              <div className={styles.bankTransferRow}>
+                <span>💵 Precio en efectivo:</span>
+                <Price amount={price} />
+              </div>
+              <div className={styles.bankTransferRow}>
+                <span>🏦 Recargo por transferencia ({productBankTransferSurcharge}%):</span>
+                <span className={styles.surchargeAmount}>+{formatPriceWithCode(bankTransferAmount)}</span>
+              </div>
+              <div className={`${styles.bankTransferRow} ${styles.totalRow}`}>
+                <span>💰 Total por transferencia bancaria:</span>
+                <span className={styles.totalAmount}>{formatPriceWithCode(totalWithBankTransfer)}</span>
+              </div>
+            </div>
+            <div className={styles.bankTransferNote}>
+              <span className={styles.noteIcon}>ℹ️</span>
+              <span className={styles.noteText}>
+                Este producto tiene un recargo del {productBankTransferSurcharge}% cuando se paga por transferencia bancaria. 
+                El recargo se aplica automáticamente al seleccionar este método de pago en el checkout.
+              </span>
+            </div>
+          </div>
+        )}
 
         <hr />
 

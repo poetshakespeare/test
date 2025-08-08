@@ -258,4 +258,56 @@
   .skeletonImg {
     height: 15rem;
   }
+
+  .bankTransferBadge {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .bankIcon {
+    font-size: 1.1rem;
+  }
+
+  .bankText {
+    font-size: 0.85rem;
+  }
+}
+
+.bankTransferBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f59e0b;
+  border-radius: var(--borderRadius);
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.bankIcon {
+  font-size: 1rem;
+}
+
+.bankText {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media screen and (min-width: 768px) {
+  .bankTransferBadge {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .bankIcon {
+    font-size: 1.1rem;
+  }
+
+  .bankText {
+    font-size: 0.85rem;
+  }
 }

@@ -120,6 +120,85 @@
   cursor: default;
 }
 
+.bankTransferInfo {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  border-radius: var(--borderRadius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.bankTransferInfo h4 {
+  margin: 0 0 1rem 0;
+  color: #92400e;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.bankTransferDetails {
+  background: var(--white);
+  padding: 1rem;
+  border-radius: var(--borderRadius);
+  border: 1px solid #f59e0b;
+  margin-bottom: 1rem;
+}
+
+.bankTransferRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--grey-200);
+  font-size: 0.95rem;
+}
+
+.bankTransferRow:last-child {
+  border-bottom: none;
+}
+
+.bankTransferRow.totalRow {
+  border-top: 2px solid #f59e0b;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.surchargeAmount {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.totalAmount {
+  color: #92400e;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.bankTransferNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+  border-radius: var(--borderRadius);
+  border: 1px solid #f59e0b;
+}
+
+.noteIcon {
+  font-size: 1.2rem;
+  color: #92400e;
+  flex-shrink: 0;
+}
+
+.noteText {
+  color: #92400e;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
 .color .productContent hr {
   margin-bottom: 1rem;
 }

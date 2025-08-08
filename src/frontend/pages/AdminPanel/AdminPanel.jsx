@@ -9,6 +9,7 @@ import CategoryManager from './components/CategoryManager';
 import MessagesManager from './components/MessagesManager';
 import BackupManager from './components/BackupManager';
 import CouponProductManager from './components/CouponProductManager';
+import BankTransferManager from './components/BankTransferManager';
 import styles from './AdminPanel.module.css';
 
 const AdminPanel = () => {
@@ -23,6 +24,7 @@ const AdminPanel = () => {
     { id: 'products', label: '📦 Productos', component: ProductManager },
     { id: 'categories', label: '📂 Categorías', component: CategoryManager },
     { id: 'coupon-products', label: '🎫 Control Cupones', component: CouponProductManager },
+    { id: 'bank-transfer', label: '🏦 Recargos Transferencia', component: BankTransferManager },
     { id: 'messages', label: '💬 Mensajes', component: MessagesManager },
     { id: 'coupons', label: '🏷️ Cupones', component: CouponManager },
     { id: 'settings', label: '⚙️ Configuración', component: StoreSettings },

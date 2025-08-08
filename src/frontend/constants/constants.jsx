@@ -111,6 +111,58 @@ export const SERVICE_TYPES = {
   PICKUP: 'pickup'
 };
 
+// Tipos de pago
+export const PAYMENT_TYPES = {
+  CASH: 'cash',
+  BANK_TRANSFER: 'bank_transfer'
+};
+
+// Recargo por transferencia bancaria
+export const BANK_TRANSFER_SURCHARGE = 20; // 20% adicional
+
+// Función para obtener recargo de transferencia bancaria dinámico
+export const getBankTransferSurcharge = (productCategory = null) => {
+  const savedConfig = localStorage.getItem('adminStoreConfig');
+  
+  if (savedConfig) {
+    try {
+      const parsedConfig = JSON.parse(savedConfig);
+      const bankConfig = parsedConfig.bankTransferConfig;
+      
+      if (bankConfig && bankConfig.isEnabled) {
+        // Si hay una categoría específica y tiene recargo personalizado
+        if (productCategory && bankConfig.categorySpecificSurcharges[productCategory] !== undefined) {
+          return bankConfig.categorySpecificSurcharges[productCategory];
+        }
+        // Si no, usar el recargo por defecto
+        return bankConfig.defaultSurcharge || BANK_TRANSFER_SURCHARGE;
+      }
+    } catch (error) {
+      console.error('Error al cargar configuración de transferencia bancaria:', error);
+    }
+  }
+  
+  // Fallback al valor por defecto
+  return BANK_TRANSFER_SURCHARGE;
+};
+
+// Función para verificar si el sistema de transferencia bancaria está habilitado
+export const isBankTransferEnabled = () => {
+  const savedConfig = localStorage.getItem('adminStoreConfig');
+  
+  if (savedConfig) {
+    try {
+      const parsedConfig = JSON.parse(savedConfig);
+      const bankConfig = parsedConfig.bankTransferConfig;
+      return bankConfig ? bankConfig.isEnabled : true;
+    } catch (error) {
+      console.error('Error al verificar estado de transferencia bancaria:', error);
+    }
+  }
+  
+  return true; // Por defecto habilitado
+};
+
 // Zonas de Santiago de Cuba con costos de entrega - ACTUALIZADAS
 export const SANTIAGO_ZONES = [
   {

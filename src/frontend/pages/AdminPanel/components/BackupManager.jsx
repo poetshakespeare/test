@@ -498,6 +498,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
               <ul>
                 <li>🎫 {stats.coupons} cupones configurados</li>
                 <li>📍 {stats.zones} zonas de entrega</li>
+                <li>🏦 Sistema de recargos por transferencia bancaria configurado</li>
                 <li>📦 {stats.products} productos en catálogo (con imágenes 600x450px responsivas)</li>
                 <li>📂 {stats.categories} categorías disponibles (con imágenes 400x300px responsivas)</li>
                 <li>💬 {Object.keys(JSON.parse(localStorage.getItem('storeMessages') || '{}')).length} categorías de mensajes</li>
