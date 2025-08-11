@@ -177,6 +177,16 @@ const CouponProductManager = () => {
     toastHandler(ToastType.Success, 
       `✅ ${product.name}: ${product.canUseCoupons ? 'Cupones deshabilitados' : 'Cupones habilitados'}`
     );
+    
+    // Disparar eventos de sincronización adicionales
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('couponProductsUpdated', { 
+        detail: { products: updatedProducts } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'couponproducts', data: updatedProducts } 
+      }));
+    }, 10);
   };
 
   const toggleAllProducts = (enableCoupons) => {
@@ -192,6 +202,16 @@ const CouponProductManager = () => {
     toastHandler(ToastType.Success, 
       `✅ ${enableCoupons ? 'Cupones habilitados' : 'Cupones deshabilitados'} para todos los productos`
     );
+    
+    // Disparar eventos de sincronización adicionales
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('couponProductsUpdated', { 
+        detail: { products: updatedProducts } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'couponproducts', data: updatedProducts } 
+      }));
+    }, 10);
   };
 
   const saveChanges = () => {

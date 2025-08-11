@@ -369,13 +369,14 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
 
       // Agregar archivo de configuración JSON completo
       const savedConfig = localStorage.getItem('adminStoreConfig');
+      const savedMessages = localStorage.getItem('storeMessages');
       let fullConfig = {
         storeConfig,
         products,
         categories,
-        messages: JSON.parse(localStorage.getItem('storeMessages') || '{}'),
+        messages: savedMessages ? JSON.parse(savedMessages) : {},
         exportDate: new Date().toISOString(),
-        version: '2.0.0'
+        version: '2.1.0'
       };
 
       // Si hay configuración guardada, usarla
@@ -385,8 +386,9 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           fullConfig = {
             ...fullConfig,
             ...parsedConfig,
+            messages: savedMessages ? JSON.parse(savedMessages) : fullConfig.messages,
             exportDate: new Date().toISOString(),
-            version: '2.0.0'
+            version: '2.1.0'
           };
         } catch (error) {
           console.error('Error al cargar configuración guardada:', error);
@@ -409,7 +411,7 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
       URL.revokeObjectURL(url);
       
       toastHandler(ToastType.Success, '🎉 Backup de Yero Shop exportado exitosamente');
-      toastHandler(ToastType.Info, 'Los archivos mantienen la estructura exacta con imágenes optimizadas');
+      toastHandler(ToastType.Info, 'Los archivos mantienen la estructura exacta con sincronización completa');
       
     } catch (error) {
       console.error('Error al exportar backup:', error);
@@ -500,8 +502,12 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
                 <li>📍 {stats.zones} zonas de entrega</li>
                 <li>📦 {stats.products} productos en catálogo (con imágenes 600x450px responsivas)</li>
                 <li>📂 {stats.categories} categorías disponibles (con imágenes 400x300px responsivas)</li>
-                <li>💬 {Object.keys(JSON.parse(localStorage.getItem('storeMessages') || '{}')).length} categorías de mensajes</li>
+                <li>💬 {Object.keys(JSON.parse(localStorage.getItem('storeMessages') || '{}')).length} categorías de mensajes sincronizados</li>
                 <li>💱 Sistema completo de monedas (CUP, USD, EUR, MLC)</li>
+                <li>🔄 Sincronización en tiempo real entre todas las secciones</li>
+                <li>💳 Configuración de métodos de pago por producto</li>
+                <li>🎫 Control de cupones por producto</li>
+                <li>⚙️ Configuración general de la tienda</li>
               </ul>
             </div>
             <button 

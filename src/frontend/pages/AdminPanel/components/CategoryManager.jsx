@@ -261,26 +261,34 @@ const CategoryManager = () => {
     // 4. Actualizar en el contexto de productos para sincronización inmediata en la tienda
     updateCategoriesFromAdmin(updatedCategories);
     
-    // 5. Disparar múltiples eventos para garantizar sincronización completa
+    // 5. Disparar eventos de sincronización optimizados
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
         detail: { categories: updatedCategories } 
       }));
       
+      window.dispatchEvent(new CustomEvent('categoriesConfigUpdated', { 
+        detail: { categories: updatedCategories } 
+      }));
+      
       window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
       
-      // NUEVO: Evento específico para cambios de configuración del admin
       window.dispatchEvent(new CustomEvent('adminConfigChanged', { 
         detail: { categories: updatedCategories, type: 'categories' } 
       }));
       
-      // Forzar re-renderizado adicional
-      window.dispatchEvent(new CustomEvent('categoriesConfigUpdated', { 
+      // Sincronizar con otros componentes del admin panel
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'categories', data: updatedCategories } 
+      }));
+      
+      // Sincronizar específicamente con ProductManager
+      window.dispatchEvent(new CustomEvent('categoriesForProductsUpdated', { 
         detail: { categories: updatedCategories } 
       }));
-    }, 50);
+    }, 10);
 
-    // 6. Verificación adicional para asegurar sincronización
+    // 6. Verificación de sincronización
     setTimeout(() => {
       const currentConfig = localStorage.getItem('adminStoreConfig');
       if (currentConfig) {
@@ -288,13 +296,13 @@ const CategoryManager = () => {
           const parsedConfig = JSON.parse(currentConfig);
           if (parsedConfig.categories && parsedConfig.categories.length === updatedCategories.length) {
             console.log('✅ Sincronización de categorías verificada exitosamente');
-            toastHandler(ToastType.Info, '🔄 Categorías sincronizadas en tiempo real');
+            toastHandler(ToastType.Info, '🔄 Categorías sincronizadas en tiempo real con productos');
           }
         } catch (error) {
           console.error('Error en verificación de sincronización:', error);
         }
       }
-    }, 200);
+    }, 100);
 
     console.log('✅ Sincronización de categorías completada');
   };

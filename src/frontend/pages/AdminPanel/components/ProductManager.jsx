@@ -8,10 +8,11 @@ import { useCurrencyContext } from '../../../contexts/CurrencyContextProvider';
 import styles from './ProductManager.module.css';
 
 const ProductManager = () => {
-  const { products: productsFromContext, updateProductsFromAdmin } = useAllProductsContext();
+  const { products: productsFromContext, categories: categoriesFromContext, updateProductsFromAdmin } = useAllProductsContext();
   const { updateProducts } = useConfigContext();
   const { formatPriceWithCode } = useCurrencyContext();
   const [localProducts, setLocalProducts] = useState([]);
+  const [localCategories, setLocalCategories] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
@@ -23,7 +24,6 @@ const ProductManager = () => {
     category: '',
     company: '',
     description: '',
-    stock: '',
     stars: '',
     reviewCount: '',
     featured: false,
@@ -62,6 +62,27 @@ const ProductManager = () => {
     }
   }, [productsFromContext, updateProductsFromAdmin]);
 
+  // CARGAR CATEGORÍAS PARA SINCRONIZACIÓN
+  useEffect(() => {
+    console.log('🔄 Cargando categorías en ProductManager:', categoriesFromContext?.length || 0);
+    
+    if (categoriesFromContext && categoriesFromContext.length > 0) {
+      setLocalCategories(categoriesFromContext);
+    } else {
+      const savedConfig = localStorage.getItem('adminStoreConfig');
+      if (savedConfig) {
+        try {
+          const parsedConfig = JSON.parse(savedConfig);
+          if (parsedConfig.categories && parsedConfig.categories.length > 0) {
+            console.log('📂 Cargando categorías desde localStorage para productos:', parsedConfig.categories.length);
+            setLocalCategories(parsedConfig.categories);
+          }
+        } catch (error) {
+          console.error('Error al cargar categorías desde localStorage:', error);
+        }
+      }
+    }
+  }, [categoriesFromContext]);
   // ESCUCHAR EVENTOS DE ACTUALIZACIÓN DE PRODUCTOS
   useEffect(() => {
     const handleProductsUpdate = (event) => {
@@ -70,6 +91,11 @@ const ProductManager = () => {
       setLocalProducts(updatedProducts);
     };
 
+    const handleCategoriesUpdate = (event) => {
+      const { categories: updatedCategories } = event.detail;
+      console.log('📡 Evento de actualización de categorías recibido en ProductManager');
+      setLocalCategories(updatedCategories);
+    };
     const handleConfigUpdate = () => {
       console.log('📡 Evento de actualización de configuración recibido en ProductManager');
       const savedConfig = localStorage.getItem('adminStoreConfig');
@@ -78,6 +104,9 @@ const ProductManager = () => {
           const parsedConfig = JSON.parse(savedConfig);
           if (parsedConfig.products) {
             setLocalProducts(parsedConfig.products);
+          }
+          if (parsedConfig.categories) {
+            setLocalCategories(parsedConfig.categories);
           }
         } catch (error) {
           console.error('Error al cargar productos desde configuración:', error);
@@ -88,6 +117,8 @@ const ProductManager = () => {
     // Agregar listeners
     window.addEventListener('productsUpdated', handleProductsUpdate);
     window.addEventListener('productsConfigUpdated', handleProductsUpdate);
+    window.addEventListener('categoriesUpdated', handleCategoriesUpdate);
+    window.addEventListener('categoriesConfigUpdated', handleCategoriesUpdate);
     window.addEventListener('forceStoreUpdate', handleConfigUpdate);
     window.addEventListener('adminConfigChanged', handleConfigUpdate);
 
@@ -95,6 +126,8 @@ const ProductManager = () => {
     return () => {
       window.removeEventListener('productsUpdated', handleProductsUpdate);
       window.removeEventListener('productsConfigUpdated', handleProductsUpdate);
+      window.removeEventListener('categoriesUpdated', handleCategoriesUpdate);
+      window.removeEventListener('categoriesConfigUpdated', handleCategoriesUpdate);
       window.removeEventListener('forceStoreUpdate', handleConfigUpdate);
       window.removeEventListener('adminConfigChanged', handleConfigUpdate);
     };
@@ -234,7 +267,7 @@ const ProductManager = () => {
       "category": productForm.category.toLowerCase().trim(),
       "company": productForm.company.trim(),
       "description": productForm.description.trim(),
-      "stock": parseInt(productForm.stock) || 0,
+      "stock": productForm.colors.reduce((total, color) => total + (parseInt(color.colorQuantity) || 0), 0),
       "stars": parseFloat(productForm.stars) || 4.5,
       "reviewCount": parseInt(productForm.reviewCount) || 0,
       "featured": productForm.featured,
@@ -359,7 +392,6 @@ const ProductManager = () => {
       category: product.category,
       company: product.company,
       description: product.description,
-      stock: product.stock.toString(),
       stars: product.stars.toString(),
       reviewCount: product.reviewCount.toString(),
       featured: product.featured,
@@ -402,6 +434,13 @@ const ProductManager = () => {
     const feePercentage = parseFloat(productForm.transferFeePercentage) || 5;
     return basePrice * (1 + feePercentage / 100);
   };
+  // Obtener categorías disponibles para el selector
+  const getAvailableCategories = () => {
+    const enabledCategories = localCategories.filter(cat => !cat.disabled);
+    return enabledCategories.map(cat => cat.categoryName);
+  };
+
+  const availableCategories = getAvailableCategories();
 
   // Verificar si hay cambios pendientes
   const hasChanges = localProducts.length !== productsFromContext.length || 
@@ -428,7 +467,7 @@ const ProductManager = () => {
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes mantienen el tamaño actual de los productos existentes (600x450px responsivo). Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes mantienen el tamaño actual de los productos existentes (600x450px responsivo). El stock total se calcula automáticamente sumando el stock de todos los colores. Las categorías se sincronizan con las categorías existentes. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
       {editingProduct && (
@@ -483,16 +522,37 @@ const ProductManager = () => {
             </div>
 
             <div className={styles.formGroup}>
-              <label>Categoría *</label>
-              <input
-                type="text"
-                name="category"
-                value={productForm.category}
-                onChange={handleInputChange}
-                className="form-input"
-                placeholder="laptop, mobile, tv..."
-                required
-              />
+              <label>Categoría * (Sincronizada con categorías existentes)</label>
+              {availableCategories.length > 0 ? (
+                <select
+                  name="category"
+                  value={productForm.category}
+                  onChange={handleInputChange}
+                  className="form-select"
+                  required
+                >
+                  <option value="">Seleccionar categoría</option>
+                  {availableCategories.map(categoryName => (
+                    <option key={categoryName} value={categoryName}>
+                      {categoryName}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className={styles.noCategoriesWarning}>
+                  <p>⚠️ No hay categorías disponibles</p>
+                  <small>Ve a la sección "📂 Categorías" para crear categorías primero</small>
+                  <input
+                    type="text"
+                    name="category"
+                    value={productForm.category}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="Escribe una categoría temporal"
+                    required
+                  />
+                </div>
+              )}
             </div>
 
             <div className={styles.formGroup}>
@@ -507,21 +567,6 @@ const ProductManager = () => {
               />
             </div>
 
-            <div className={styles.formGroup}>
-              <label>Stock *</label>
-              <input
-                type="number"
-                name="stock"
-                value={productForm.stock}
-                onChange={handleInputChange}
-                className="form-input"
-                min="0"
-                required
-              />
-              <div className={styles.stockInfo}>
-                📦 Stock total disponible: {productForm.colors.reduce((total, color) => total + (parseInt(color.colorQuantity) || 0), 0)} unidades
-              </div>
-            </div>
 
             <div className={styles.formGroup}>
               <label>Calificación (1-5)</label>
@@ -589,7 +634,12 @@ const ProductManager = () => {
 
           {/* SECCIÓN DE COLORES */}
           <div className={styles.colorsSection}>
-            <label>Colores y Stock por Color *</label>
+            <div className={styles.colorsSectionHeader}>
+              <label>Colores y Stock por Color *</label>
+              <div className={styles.stockInfo}>
+                📦 Stock total calculado: {productForm.colors.reduce((total, color) => total + (parseInt(color.colorQuantity) || 0), 0)} unidades
+              </div>
+            </div>
             {productForm.colors.map((color, index) => (
               <div key={index} className={styles.colorRow}>
                 <input
@@ -765,7 +815,7 @@ const ProductManager = () => {
               <div className={styles.productInfo}>
                 <h4>{product.name}</h4>
                 <p className={styles.productPrice}>{formatPriceWithCode(product.price)}</p>
-                <p className={styles.productStock}>📦 Stock: {product.stock}</p>
+                <p className={styles.productStock}>📦 Stock: {product.stock || product.colors?.reduce((total, color) => total + (color.colorQuantity || 0), 0) || 0}</p>
                 <p className={styles.productRating}>⭐ {product.stars} ({product.reviewCount} reseñas)</p>
                 <p className={styles.productCategory}>📂 {product.category}</p>
                 <p className={styles.productCompany}>🏢 {product.company}</p>

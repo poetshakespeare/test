@@ -72,6 +72,16 @@ const StoreSettings = () => {
     }
 
     updateStoreInfo(storeSettings);
+    
+    // Disparar eventos de sincronización adicionales
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('storeInfoUpdated', { 
+        detail: { storeInfo: storeSettings } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'storeInfo', data: storeSettings } 
+      }));
+    }, 10);
   };
 
   const handleZoneSubmit = (e) => {
@@ -101,6 +111,17 @@ const StoreSettings = () => {
 
     updateZones(updatedZones);
     setZones(updatedZones);
+    
+    // Disparar eventos de sincronización
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('zonesUpdated', { 
+        detail: { zones: updatedZones } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'zones', data: updatedZones } 
+      }));
+    }, 10);
+    
     resetZoneForm();
   };
 
@@ -125,6 +146,17 @@ const StoreSettings = () => {
       const updatedZones = zones.filter(zone => zone.id !== zoneId);
       updateZones(updatedZones);
       setZones(updatedZones);
+      
+      // Disparar eventos de sincronización
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('zonesUpdated', { 
+          detail: { zones: updatedZones } 
+        }));
+        window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+          detail: { type: 'zones', data: updatedZones } 
+        }));
+      }, 10);
+      
       toastHandler(ToastType.Success, 'Zona eliminada exitosamente');
     }
   };

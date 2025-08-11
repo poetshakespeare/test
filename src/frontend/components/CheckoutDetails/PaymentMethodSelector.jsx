@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { useCurrencyContext } from '../../contexts/CurrencyContextProvider';
 import Price from '../Price';
 import styles from './PaymentMethodSelector.module.css';
@@ -11,6 +12,25 @@ const PaymentMethodSelector = ({
 }) => {
   const { formatPriceWithCode } = useCurrencyContext();
 
+  // ESCUCHAR EVENTOS DE SINCRONIZACIÓN DE MÉTODOS DE PAGO
+  useEffect(() => {
+    const handlePaymentConfigSync = (event) => {
+      const { type } = event.detail;
+      if (type === 'paymentconfig' || type === 'products') {
+        console.log('📡 Sincronización de configuración de pagos detectada en PaymentMethodSelector');
+        // Forzar re-evaluación de métodos de pago disponibles
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      }
+    };
+
+    window.addEventListener('adminPanelSync', handlePaymentConfigSync);
+
+    return () => {
+      window.removeEventListener('adminPanelSync', handlePaymentConfigSync);
+    };
+  }, []);
   // Calcular totales por método de pago
   const calculatePaymentTotals = () => {
     let cashTotal = 0;

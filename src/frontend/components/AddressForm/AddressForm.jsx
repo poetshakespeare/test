@@ -80,11 +80,19 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       setTimeout(updateShippingAvailability, 100);
     };
 
+    const handleAdminPanelSync = (event) => {
+      const { type } = event.detail;
+      if (type === 'products' || type === 'paymentconfig' || type === 'couponproducts') {
+        console.log('📡 Sincronización de panel admin detectada en AddressForm');
+        setTimeout(updateShippingAvailability, 100);
+      }
+    };
     // Agregar listeners para eventos de sincronización
     window.addEventListener('productsUpdated', handleProductsUpdate);
     window.addEventListener('productsConfigUpdated', handleProductsUpdate);
     window.addEventListener('forceStoreUpdate', handleConfigUpdate);
     window.addEventListener('adminConfigChanged', handleConfigUpdate);
+    window.addEventListener('adminPanelSync', handleAdminPanelSync);
 
     // Cleanup
     return () => {
@@ -92,6 +100,7 @@ const AddressForm = ({ isAdding, isEditingAndData = null, closeForm }) => {
       window.removeEventListener('productsConfigUpdated', handleProductsUpdate);
       window.removeEventListener('forceStoreUpdate', handleConfigUpdate);
       window.removeEventListener('adminConfigChanged', handleConfigUpdate);
+      window.removeEventListener('adminPanelSync', handleAdminPanelSync);
     };
   }, [cart]); // Dependencia del carrito para reaccionar a cambios
 

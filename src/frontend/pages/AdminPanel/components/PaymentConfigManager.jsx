@@ -129,6 +129,16 @@ const PaymentConfigManager = () => {
     toastHandler(ToastType.Success, 
       `✅ ${product.name}: Método de pago actualizado`
     );
+    
+    // Disparar eventos de sincronización adicionales
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('paymentConfigUpdated', { 
+        detail: { products: updatedProducts } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'paymentconfig', data: updatedProducts } 
+      }));
+    }, 10);
   };
 
   const updateAllProducts = (paymentType, transferFeePercentage = 5) => {
@@ -144,6 +154,16 @@ const PaymentConfigManager = () => {
     toastHandler(ToastType.Success, 
       `✅ Método de pago actualizado para todos los productos`
     );
+    
+    // Disparar eventos de sincronización adicionales
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('paymentConfigUpdated', { 
+        detail: { products: updatedProducts } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'paymentconfig', data: updatedProducts } 
+      }));
+    }, 10);
   };
 
   // Filtrar productos

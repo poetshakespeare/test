@@ -146,9 +146,44 @@
   background: var(--primary-100);
   padding: 0.75rem;
   border-radius: var(--borderRadius);
-  margin-bottom: 1rem;
   border: 1px solid var(--primary-300);
   color: var(--primary-700);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.colorsSectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.colorsSectionHeader label {
+  font-weight: 600;
+  color: var(--grey-700);
+}
+
+.noCategoriesWarning {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  border-radius: var(--borderRadius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.noCategoriesWarning p {
+  margin: 0 0 0.5rem 0;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.noCategoriesWarning small {
+  display: block;
+  color: #92400e;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .colorRow {

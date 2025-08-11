@@ -25,6 +25,30 @@ const CouponManager = () => {
     setCoupons(storeConfig.coupons || []);
   }, [storeConfig.coupons]);
 
+  // ESCUCHAR EVENTOS DE SINCRONIZACIÓN
+  useEffect(() => {
+    const handleCouponsUpdate = (event) => {
+      const { coupons: updatedCoupons } = event.detail;
+      console.log('📡 Evento de actualización de cupones recibido en CouponManager');
+      setCoupons(updatedCoupons);
+    };
+
+    const handleAdminPanelSync = (event) => {
+      const { type, data } = event.detail;
+      if (type === 'coupons') {
+        console.log('📡 Sincronización de panel admin para cupones');
+        setCoupons(data);
+      }
+    };
+
+    window.addEventListener('couponsUpdated', handleCouponsUpdate);
+    window.addEventListener('adminPanelSync', handleAdminPanelSync);
+
+    return () => {
+      window.removeEventListener('couponsUpdated', handleCouponsUpdate);
+      window.removeEventListener('adminPanelSync', handleAdminPanelSync);
+    };
+  }, []);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCouponForm(prev => ({
@@ -84,6 +108,17 @@ const CouponManager = () => {
     // Actualizar en el contexto de configuración
     updateCoupons(updatedCoupons);
     setCoupons(updatedCoupons);
+    
+    // Disparar eventos de sincronización adicionales
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('couponsUpdated', { 
+        detail: { coupons: updatedCoupons } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'coupons', data: updatedCoupons } 
+      }));
+    }, 10);
+    
     resetForm();
   };
 
@@ -109,6 +144,17 @@ const CouponManager = () => {
       const updatedCoupons = coupons.filter(c => c.id !== couponId);
       updateCoupons(updatedCoupons);
       setCoupons(updatedCoupons);
+      
+      // Disparar eventos de sincronización
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('couponsUpdated', { 
+          detail: { coupons: updatedCoupons } 
+        }));
+        window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+          detail: { type: 'coupons', data: updatedCoupons } 
+        }));
+      }, 10);
+      
       toastHandler(ToastType.Success, 'Cupón eliminado exitosamente');
     }
   };

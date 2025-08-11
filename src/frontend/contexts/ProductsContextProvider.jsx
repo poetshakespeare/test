@@ -148,26 +148,32 @@ const ProductsContextProvider = ({ children }) => {
       }
     }
     
-    // 3. Forzar actualización inmediata en toda la aplicación
+    // 3. Disparar eventos de sincronización inmediata
     setTimeout(() => {
-      // Disparar múltiples eventos para garantizar sincronización
       window.dispatchEvent(new CustomEvent('productsUpdated', { 
+        detail: { products: newProducts } 
+      }));
+      
+      window.dispatchEvent(new CustomEvent('productsConfigUpdated', { 
         detail: { products: newProducts } 
       }));
       
       window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
       
-      // Evento específico para cambios del admin
       window.dispatchEvent(new CustomEvent('adminConfigChanged', { 
         detail: { products: newProducts, type: 'products' } 
       }));
       
-      // Forzar re-renderizado del contexto
       dispatch({
         type: PRODUCTS_ACTION.FORCE_UPDATE_PRODUCTS,
         payload: { products: newProducts },
       });
-    }, 50);
+      
+      // Sincronizar con otros componentes del admin panel
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'products', data: newProducts } 
+      }));
+    }, 10);
 
     console.log('✅ Sincronización de productos completada');
   };
@@ -210,26 +216,32 @@ const ProductsContextProvider = ({ children }) => {
       }
     }
     
-    // 3. Forzar actualización inmediata en toda la aplicación
+    // 3. Disparar eventos de sincronización inmediata
     setTimeout(() => {
-      // Disparar múltiples eventos para garantizar sincronización
       window.dispatchEvent(new CustomEvent('categoriesUpdated', { 
+        detail: { categories: newCategories } 
+      }));
+      
+      window.dispatchEvent(new CustomEvent('categoriesConfigUpdated', { 
         detail: { categories: newCategories } 
       }));
       
       window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
       
-      // Evento específico para cambios del admin
       window.dispatchEvent(new CustomEvent('adminConfigChanged', { 
         detail: { categories: newCategories, type: 'categories' } 
       }));
       
-      // Forzar re-renderizado del contexto
       dispatch({
         type: PRODUCTS_ACTION.FORCE_UPDATE_CATEGORIES,
         payload: { categories: newCategories },
       });
-    }, 50);
+      
+      // Sincronizar con otros componentes del admin panel
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'categories', data: newCategories } 
+      }));
+    }, 10);
 
     console.log('✅ Sincronización de categorías completada');
   };

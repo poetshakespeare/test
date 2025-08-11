@@ -185,6 +185,47 @@ const CouponSearch = ({ activeCoupon, updateActiveCoupon }) => {
     }
   }, [activeCoupon]);
 
+  // ESCUCHAR EVENTOS DE ACTUALIZACIÓN MEJORADOS CON VERIFICACIÓN
+  useEffect(() => {
+    const handleProductsUpdate = (event) => {
+      const { products: updatedProducts } = event.detail;
+      console.log('📡 Evento de actualización de productos detectado en CouponSearch');
+      setTimeout(updateShippingAvailability, 100);
+    };
+
+    const handleConfigUpdate = () => {
+      console.log('📡 Evento de actualización de configuración detectado en CouponSearch');
+      setTimeout(updateShippingAvailability, 100);
+    };
+
+    const handleAdminPanelSync = (event) => {
+      const { type } = event.detail;
+      if (type === 'products' || type === 'coupons' || type === 'couponproducts') {
+        console.log('📡 Sincronización de panel admin detectada en CouponSearch');
+        // Forzar re-evaluación de cupones disponibles
+        setTimeout(() => {
+          window.location.reload(); // Recargar para aplicar cambios de cupones
+        }, 500);
+      }
+    };
+
+    // Agregar listeners para eventos de sincronización
+    window.addEventListener('productsUpdated', handleProductsUpdate);
+    window.addEventListener('productsConfigUpdated', handleProductsUpdate);
+    window.addEventListener('forceStoreUpdate', handleConfigUpdate);
+    window.addEventListener('adminConfigChanged', handleConfigUpdate);
+    window.addEventListener('adminPanelSync', handleAdminPanelSync);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('productsUpdated', handleProductsUpdate);
+      window.removeEventListener('productsConfigUpdated', handleProductsUpdate);
+      window.removeEventListener('forceStoreUpdate', handleConfigUpdate);
+      window.removeEventListener('adminConfigChanged', handleConfigUpdate);
+      window.removeEventListener('adminPanelSync', handleAdminPanelSync);
+    };
+  }, [cartFromContext]); // Dependencia del carrito para reaccionar a cambios
+
   return (
     <form onSubmit={handleSearchSubmit} className={styles.searchCoupons}>
       <AiFillTag />

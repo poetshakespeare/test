@@ -48,6 +48,46 @@
   box-shadow: var(--shadow-2);
 }
 
+.globalSyncIndicator {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-3);
+  z-index: 1000;
+  font-weight: 600;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.syncIndicator {
+  margin-left: 0.5rem;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
 @media screen and (max-width: 768px) {
   .adminPanel {
     padding: 0.5rem;
@@ -60,5 +100,12 @@
 
   .tabContent {
     padding: 1rem;
+  }
+  
+  .globalSyncIndicator {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
   }
 }

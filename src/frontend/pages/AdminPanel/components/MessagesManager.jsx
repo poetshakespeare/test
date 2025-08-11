@@ -129,6 +129,16 @@ const MessagesManager = () => {
     setHasUnsavedChanges(false);
     toastHandler(ToastType.Success, '✅ Mensajes guardados en memoria');
     toastHandler(ToastType.Info, 'Para aplicar los cambios, ve a "💾 Exportar/Importar" y exporta la configuración');
+    
+    // Disparar eventos de sincronización
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('messagesUpdated', { 
+        detail: { messages: newMessages } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'messages', data: newMessages } 
+      }));
+    }, 10);
   };
 
   const handleMessageEdit = (category, key, newValue) => {
@@ -153,6 +163,16 @@ const MessagesManager = () => {
       localStorage.setItem('storeMessages', JSON.stringify(defaultMessages));
       setHasUnsavedChanges(false);
       toastHandler(ToastType.Success, 'Mensajes restablecidos a valores por defecto');
+      
+      // Disparar eventos de sincronización
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('messagesUpdated', { 
+          detail: { messages: defaultMessages } 
+        }));
+        window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+          detail: { type: 'messages', data: defaultMessages } 
+        }));
+      }, 10);
     }
   };
 

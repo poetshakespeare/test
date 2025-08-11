@@ -94,6 +94,9 @@ const ConfigManager = () => {
         window.dispatchEvent(new CustomEvent('configurationImported', { 
           detail: { config } 
         }));
+        window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+          detail: { type: 'fullconfig', data: config } 
+        }));
       }, 100);
 
     } catch (error) {
@@ -128,6 +131,9 @@ const ConfigManager = () => {
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent('forceStoreUpdate'));
         window.dispatchEvent(new CustomEvent('configurationReset'));
+        window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+          detail: { type: 'reset', data: {} } 
+        }));
       }, 100);
       
     } catch (error) {

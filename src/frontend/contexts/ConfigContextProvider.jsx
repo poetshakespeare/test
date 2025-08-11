@@ -49,6 +49,16 @@ const ConfigContextProvider = ({ children }) => {
       lastModified: new Date().toISOString()
     };
     saveConfig(updatedConfig);
+    
+    // Disparar eventos de sincronización
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('couponsUpdated', { 
+        detail: { coupons: newCoupons } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'coupons', data: newCoupons } 
+      }));
+    }, 10);
   };
 
   // Actualizar zonas
@@ -59,6 +69,16 @@ const ConfigContextProvider = ({ children }) => {
       lastModified: new Date().toISOString()
     };
     saveConfig(updatedConfig);
+    
+    // Disparar eventos de sincronización
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('zonesUpdated', { 
+        detail: { zones: newZones } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'zones', data: newZones } 
+      }));
+    }, 10);
   };
 
   // Actualizar información de la tienda
@@ -69,6 +89,16 @@ const ConfigContextProvider = ({ children }) => {
       lastModified: new Date().toISOString()
     };
     saveConfig(updatedConfig);
+    
+    // Disparar eventos de sincronización
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('storeInfoUpdated', { 
+        detail: { storeInfo: newStoreInfo } 
+      }));
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'storeInfo', data: newStoreInfo } 
+      }));
+    }, 10);
   };
 
   // Actualizar productos - MEJORADA PARA MANTENER ESTRUCTURA EXACTA
@@ -87,6 +117,13 @@ const ConfigContextProvider = ({ children }) => {
     window.dispatchEvent(new CustomEvent('productsConfigUpdated', { 
       detail: { products: newProducts } 
     }));
+    
+    // Sincronización adicional
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'products', data: newProducts } 
+      }));
+    }, 10);
     
     toastHandler(ToastType.Success, 'Productos actualizados en la configuración');
   };
@@ -107,6 +144,13 @@ const ConfigContextProvider = ({ children }) => {
     window.dispatchEvent(new CustomEvent('categoriesConfigUpdated', { 
       detail: { categories: newCategories } 
     }));
+    
+    // Sincronización adicional
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('adminPanelSync', { 
+        detail: { type: 'categories', data: newCategories } 
+      }));
+    }, 10);
     
     toastHandler(ToastType.Success, 'Categorías actualizadas en la configuración');
   };

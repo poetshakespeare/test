@@ -3,6 +3,7 @@ import Title from '../Title/Title';
 import styles from './Categories.module.css';
 import { useAllProductsContext } from '../../contexts/ProductsContextProvider';
 import { useFiltersContext } from '../../contexts/FiltersContextProvider';
+import { useEffect } from 'react';
 
 const Categories = () => {
   const navigate = useNavigate();
