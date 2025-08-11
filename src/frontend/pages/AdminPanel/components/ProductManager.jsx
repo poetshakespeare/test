@@ -1,39 +1,104 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
+import { toastHandler } from '../../../utils/utils';
+import { ToastType, PAYMENT_TYPES, TRANSFER_CONFIG } from '../../../constants/constants';
 import { useAllProductsContext } from '../../../contexts/ProductsContextProvider';
 import { useConfigContext } from '../../../contexts/ConfigContextProvider';
-import { toastHandler } from '../../../utils/utils';
-import { ToastType } from '../../../constants/constants';
+import { useCurrencyContext } from '../../../contexts/CurrencyContextProvider';
 import styles from './ProductManager.module.css';
 
 const ProductManager = () => {
-  const { products, categories, updateProductsFromAdmin } = useAllProductsContext();
+  const { products: productsFromContext, updateProductsFromAdmin } = useAllProductsContext();
   const { updateProducts } = useConfigContext();
+  const { formatPriceWithCode } = useCurrencyContext();
   const [localProducts, setLocalProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [formData, setFormData] = useState({
+
+  const initialProductState = {
     name: '',
     price: '',
     originalPrice: '',
-    description: '',
+    image: '',
     category: '',
     company: '',
+    description: '',
     stock: '',
-    reviewCount: '',
     stars: '',
-    colors: [{ color: '#000000', colorQuantity: 0 }],
-    image: '',
-    isShippingAvailable: true,
+    reviewCount: '',
     featured: false,
-    canUseCoupons: true // NUEVA PROPIEDAD PARA CUPONES
-  });
+    isShippingAvailable: true,
+    canUseCoupons: true,
+    paymentType: 'both',
+    transferFeePercentage: 5,
+    colors: [{ color: '#000000', colorQuantity: 1 }]
+  };
 
-  // Cargar productos desde el contexto
+  const [productForm, setProductForm] = useState(initialProductState);
+
+  // CARGAR PRODUCTOS CON SINCRONIZACIÓN MEJORADA
   useEffect(() => {
-    setLocalProducts(products || []);
-  }, [products]);
+    console.log('🔄 Cargando productos en ProductManager:', productsFromContext?.length || 0);
+    
+    // Cargar desde el contexto primero
+    if (productsFromContext && productsFromContext.length > 0) {
+      setLocalProducts(productsFromContext);
+    } else {
+      // Si no hay productos en el contexto, intentar cargar desde localStorage
+      const savedConfig = localStorage.getItem('adminStoreConfig');
+      if (savedConfig) {
+        try {
+          const parsedConfig = JSON.parse(savedConfig);
+          if (parsedConfig.products && parsedConfig.products.length > 0) {
+            console.log('📦 Cargando productos desde localStorage:', parsedConfig.products.length);
+            setLocalProducts(parsedConfig.products);
+            // Sincronizar con el contexto
+            updateProductsFromAdmin(parsedConfig.products);
+          }
+        } catch (error) {
+          console.error('Error al cargar productos desde localStorage:', error);
+        }
+      }
+    }
+  }, [productsFromContext, updateProductsFromAdmin]);
+
+  // ESCUCHAR EVENTOS DE ACTUALIZACIÓN DE PRODUCTOS
+  useEffect(() => {
+    const handleProductsUpdate = (event) => {
+      const { products: updatedProducts } = event.detail;
+      console.log('📡 Evento de actualización de productos recibido en ProductManager');
+      setLocalProducts(updatedProducts);
+    };
+
+    const handleConfigUpdate = () => {
+      console.log('📡 Evento de actualización de configuración recibido en ProductManager');
+      const savedConfig = localStorage.getItem('adminStoreConfig');
+      if (savedConfig) {
+        try {
+          const parsedConfig = JSON.parse(savedConfig);
+          if (parsedConfig.products) {
+            setLocalProducts(parsedConfig.products);
+          }
+        } catch (error) {
+          console.error('Error al cargar productos desde configuración:', error);
+        }
+      }
+    };
+
+    // Agregar listeners
+    window.addEventListener('productsUpdated', handleProductsUpdate);
+    window.addEventListener('productsConfigUpdated', handleProductsUpdate);
+    window.addEventListener('forceStoreUpdate', handleConfigUpdate);
+    window.addEventListener('adminConfigChanged', handleConfigUpdate);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('productsUpdated', handleProductsUpdate);
+      window.removeEventListener('productsConfigUpdated', handleProductsUpdate);
+      window.removeEventListener('forceStoreUpdate', handleConfigUpdate);
+      window.removeEventListener('adminConfigChanged', handleConfigUpdate);
+    };
+  }, []);
 
   // FUNCIÓN PARA MANTENER EL TAMAÑO ACTUAL DE LAS IMÁGENES (RESPONSIVO)
   const resizeImageToCurrentSize = (file, callback) => {
@@ -86,34 +151,11 @@ const ProductManager = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setProductForm(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
     setHasUnsavedChanges(true);
-  };
-
-  const handleColorChange = (index, field, value) => {
-    const newColors = [...formData.colors];
-    newColors[index] = { ...newColors[index], [field]: value };
-    setFormData(prev => ({ ...prev, colors: newColors }));
-    setHasUnsavedChanges(true);
-  };
-
-  const addColor = () => {
-    setFormData(prev => ({
-      ...prev,
-      colors: [...prev.colors, { color: '#000000', colorQuantity: 0 }]
-    }));
-    setHasUnsavedChanges(true);
-  };
-
-  const removeColor = (index) => {
-    if (formData.colors.length > 1) {
-      const newColors = formData.colors.filter((_, i) => i !== index);
-      setFormData(prev => ({ ...prev, colors: newColors }));
-      setHasUnsavedChanges(true);
-    }
   };
 
   const handleImageUpload = (e) => {
@@ -133,106 +175,82 @@ const ProductManager = () => {
       
       // Redimensionar imagen manteniendo el tamaño actual
       resizeImageToCurrentSize(file, (resizedDataUrl) => {
-        setFormData(prev => ({ ...prev, image: resizedDataUrl }));
+        setProductForm(prev => ({ ...prev, image: resizedDataUrl }));
         setHasUnsavedChanges(true);
         toastHandler(ToastType.Success, 'Imagen optimizada manteniendo el tamaño actual de los productos');
       });
     }
   };
 
-  const handleEdit = (product) => {
-    setSelectedProduct(product);
-    setFormData({
-      name: product.name,
-      price: product.price.toString(),
-      originalPrice: product.originalPrice.toString(),
-      description: product.description,
-      category: product.category,
-      company: product.company,
-      stock: product.stock.toString(),
-      reviewCount: product.reviewCount.toString(),
-      stars: product.stars.toString(),
-      colors: product.colors,
-      image: product.image,
-      isShippingAvailable: product.isShippingAvailable,
-      featured: product.featured || false,
-      canUseCoupons: product.canUseCoupons !== undefined ? product.canUseCoupons : true // CARGAR CONFIGURACIÓN DE CUPONES
-    });
-    setIsEditing(true);
-    setHasUnsavedChanges(false);
+  const handleColorChange = (index, field, value) => {
+    const updatedColors = [...productForm.colors];
+    updatedColors[index] = { ...updatedColors[index], [field]: value };
+    setProductForm(prev => ({ ...prev, colors: updatedColors }));
+    setHasUnsavedChanges(true);
   };
 
-  const handleSave = () => {
+  const addColor = () => {
+    setProductForm(prev => ({
+      ...prev,
+      colors: [...prev.colors, { color: '#000000', colorQuantity: 1 }]
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const removeColor = (index) => {
+    if (productForm.colors.length > 1) {
+      const updatedColors = productForm.colors.filter((_, i) => i !== index);
+      setProductForm(prev => ({ ...prev, colors: updatedColors }));
+      setHasUnsavedChanges(true);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
     // Validaciones
-    if (!formData.name.trim()) {
+    if (!productForm.name.trim()) {
       toastHandler(ToastType.Error, 'El nombre del producto es requerido');
       return;
     }
-
-    if (!formData.price || parseFloat(formData.price) <= 0) {
+    
+    if (!productForm.price || productForm.price <= 0) {
       toastHandler(ToastType.Error, 'El precio debe ser mayor a 0');
       return;
     }
 
-    if (!formData.originalPrice || parseFloat(formData.originalPrice) <= 0) {
-      toastHandler(ToastType.Error, 'El precio original debe ser mayor a 0');
-      return;
-    }
-
-    if (!formData.category) {
-      toastHandler(ToastType.Error, 'Selecciona una categoría');
-      return;
-    }
-
-    if (!formData.company.trim()) {
-      toastHandler(ToastType.Error, 'La marca es requerida');
-      return;
-    }
-
-    if (!formData.image.trim()) {
+    if (!productForm.image.trim()) {
       toastHandler(ToastType.Error, 'La imagen del producto es requerida');
       return;
     }
 
-    // Validar colores
-    const hasValidColors = formData.colors.every(color => 
-      color.color && color.colorQuantity >= 0
-    );
-
-    if (!hasValidColors) {
-      toastHandler(ToastType.Error, 'Todos los colores deben tener una cantidad válida');
-      return;
-    }
-
-    // Calcular stock total basado en los colores
-    const totalStock = formData.colors.reduce((total, color) => total + parseInt(color.colorQuantity || 0), 0);
-
-    // Crear producto con estructura exacta de products.js INCLUYENDO CUPONES
+    // Crear producto con estructura exacta de products.js
     const newProduct = {
-      "_id": selectedProduct ? selectedProduct._id : uuid(),
-      "name": formData.name.trim(),
-      "price": parseFloat(formData.price),
-      "originalPrice": parseFloat(formData.originalPrice),
-      "description": formData.description.trim(),
-      "category": formData.category,
-      "company": formData.company.trim(),
-      "stock": totalStock,
-      "reviewCount": parseInt(formData.reviewCount) || 0,
-      "stars": parseFloat(formData.stars) || 0,
-      "colors": formData.colors.map(color => ({
+      "_id": editingProduct ? editingProduct._id : uuid(),
+      "name": productForm.name.trim(),
+      "price": parseFloat(productForm.price),
+      "originalPrice": parseFloat(productForm.originalPrice) || parseFloat(productForm.price),
+      "image": productForm.image,
+      "category": productForm.category.toLowerCase().trim(),
+      "company": productForm.company.trim(),
+      "description": productForm.description.trim(),
+      "stock": parseInt(productForm.stock) || 0,
+      "stars": parseFloat(productForm.stars) || 4.5,
+      "reviewCount": parseInt(productForm.reviewCount) || 0,
+      "featured": productForm.featured,
+      "isShippingAvailable": productForm.isShippingAvailable,
+      "canUseCoupons": productForm.canUseCoupons,
+      "paymentType": productForm.paymentType,
+      "transferFeePercentage": parseFloat(productForm.transferFeePercentage) || 5,
+      "colors": productForm.colors.map(color => ({
         "color": color.color,
-        "colorQuantity": parseInt(color.colorQuantity) || 0
-      })),
-      "image": formData.image,
-      "isShippingAvailable": formData.isShippingAvailable,
-      "featured": formData.featured,
-      "canUseCoupons": formData.canUseCoupons, // NUEVA PROPIEDAD
-      "id": selectedProduct ? selectedProduct.id : (localProducts.length + 1).toString()
+        "colorQuantity": parseInt(color.colorQuantity) || 1
+      }))
     };
 
     let updatedProducts;
-    if (selectedProduct) {
-      updatedProducts = localProducts.map(p => p._id === selectedProduct._id ? newProduct : p);
+    if (editingProduct) {
+      updatedProducts = localProducts.map(p => p._id === editingProduct._id ? newProduct : p);
       toastHandler(ToastType.Success, '✅ Producto actualizado exitosamente');
     } else {
       updatedProducts = [...localProducts, newProduct];
@@ -245,14 +263,14 @@ const ProductManager = () => {
     resetForm();
   };
 
-  // Función para sincronización completa MEJORADA CON EVENTOS ADICIONALES
+  // Función para sincronización completa MEJORADA CON PERSISTENCIA GARANTIZADA
   const performCompleteSync = (updatedProducts) => {
     console.log('🔄 Iniciando sincronización completa de productos...');
     
     // 1. Actualizar estado local inmediatamente
     setLocalProducts(updatedProducts);
     
-    // 2. Actualizar en localStorage para persistencia inmediata
+    // 2. Actualizar en localStorage para persistencia inmediata con verificación
     const savedConfig = localStorage.getItem('adminStoreConfig') || '{}';
     let config = {};
     
@@ -265,7 +283,22 @@ const ProductManager = () => {
 
     config.products = updatedProducts;
     config.lastModified = new Date().toISOString();
+    
+    // Guardar con verificación
     localStorage.setItem('adminStoreConfig', JSON.stringify(config));
+    
+    // Verificar que se guardó correctamente
+    const verifyConfig = localStorage.getItem('adminStoreConfig');
+    if (verifyConfig) {
+      try {
+        const parsedVerify = JSON.parse(verifyConfig);
+        if (parsedVerify.products && parsedVerify.products.length === updatedProducts.length) {
+          console.log('✅ Productos guardados correctamente en localStorage');
+        }
+      } catch (error) {
+        console.error('Error en verificación de guardado:', error);
+      }
+    }
     
     // 3. Actualizar en el contexto de configuración para backup
     updateProducts(updatedProducts);
@@ -301,12 +334,6 @@ const ProductManager = () => {
           if (parsedConfig.products && parsedConfig.products.length === updatedProducts.length) {
             console.log('✅ Sincronización de productos verificada exitosamente');
             toastHandler(ToastType.Info, '🔄 Productos sincronizados en tiempo real');
-            
-            // NUEVO: Notificación específica para cambios de envío
-            const shippingEnabledProducts = updatedProducts.filter(p => p.isShippingAvailable);
-            if (shippingEnabledProducts.length > 0) {
-              toastHandler(ToastType.Success, `🚚 ${shippingEnabledProducts.length} productos con envío disponible actualizados`);
-            }
           }
         } catch (error) {
           console.error('Error en verificación de sincronización:', error);
@@ -318,34 +345,32 @@ const ProductManager = () => {
   };
 
   const resetForm = () => {
-    setFormData({
-      name: '',
-      price: '',
-      originalPrice: '',
-      description: '',
-      category: '',
-      company: '',
-      stock: '',
-      reviewCount: '',
-      stars: '',
-      colors: [{ color: '#000000', colorQuantity: 0 }],
-      image: '',
-      isShippingAvailable: true,
-      featured: false,
-      canUseCoupons: true // VALOR POR DEFECTO PARA CUPONES
-    });
-    setSelectedProduct(null);
-    setIsEditing(false);
+    setProductForm(initialProductState);
+    setEditingProduct(null);
     setHasUnsavedChanges(false);
   };
 
-  const handleCancel = () => {
-    if (hasUnsavedChanges) {
-      if (!window.confirm('¿Estás seguro de cancelar? Se perderán los cambios no guardados.')) {
-        return;
-      }
-    }
-    resetForm();
+  const editProduct = (product) => {
+    setProductForm({
+      name: product.name,
+      price: product.price.toString(),
+      originalPrice: product.originalPrice.toString(),
+      image: product.image,
+      category: product.category,
+      company: product.company,
+      description: product.description,
+      stock: product.stock.toString(),
+      stars: product.stars.toString(),
+      reviewCount: product.reviewCount.toString(),
+      featured: product.featured,
+      isShippingAvailable: product.isShippingAvailable,
+      canUseCoupons: product.canUseCoupons,
+      paymentType: product.paymentType || 'both',
+      transferFeePercentage: product.transferFeePercentage || 5,
+      colors: product.colors || [{ color: '#000000', colorQuantity: 1 }]
+    });
+    setEditingProduct(product);
+    setHasUnsavedChanges(false);
   };
 
   const deleteProduct = (productId) => {
@@ -361,9 +386,26 @@ const ProductManager = () => {
     toastHandler(ToastType.Success, '✅ Producto eliminado exitosamente');
   };
 
+  const handleCancel = () => {
+    if (hasUnsavedChanges) {
+      if (!window.confirm('¿Estás seguro de cancelar? Se perderán los cambios no guardados.')) {
+        return;
+      }
+    }
+    resetForm();
+  };
+
+  // Calcular precio con transferencia
+  const calculateTransferPrice = () => {
+    if (!productForm.price) return 0;
+    const basePrice = parseFloat(productForm.price);
+    const feePercentage = parseFloat(productForm.transferFeePercentage) || 5;
+    return basePrice * (1 + feePercentage / 100);
+  };
+
   // Verificar si hay cambios pendientes
-  const hasChanges = localProducts.length !== products.length || 
-    JSON.stringify(localProducts) !== JSON.stringify(products);
+  const hasChanges = localProducts.length !== productsFromContext.length || 
+    JSON.stringify(localProducts) !== JSON.stringify(productsFromContext);
 
   return (
     <div className={styles.productManager}>
@@ -377,52 +419,50 @@ const ProductManager = () => {
           )}
           <button 
             className="btn btn-primary"
-            onClick={() => setIsEditing(true)}
+            onClick={() => setEditingProduct({})}
           >
-            ➕ Nuevo Producto
+            + Nuevo Producto
           </button>
         </div>
       </div>
 
       <div className={styles.infoBox}>
         <h4>ℹ️ Información Importante</h4>
-        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes mantienen el tamaño actual de los productos existentes (600x450px responsivo). Los productos sin "Envío Disponible" no permiten entrega a domicilio. La configuración de cupones controla si el producto puede usar descuentos. Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
+        <p>Los cambios se aplican automáticamente en la tienda. Las imágenes mantienen el tamaño actual de los productos existentes (600x450px responsivo). Para exportar los cambios permanentemente, ve a la sección "🗂️ Sistema Backup".</p>
       </div>
 
-      {isEditing ? (
-        <div className={styles.editForm}>
+      {editingProduct && (
+        <form className={styles.editForm} onSubmit={handleSubmit}>
           <div className={styles.formHeader}>
-            <h3>{selectedProduct ? 'Editar Producto' : 'Nuevo Producto'}</h3>
+            <h3>{editingProduct._id ? 'Editar Producto' : 'Nuevo Producto'}</h3>
             {hasUnsavedChanges && (
               <span className={styles.unsavedIndicator}>
                 🔴 Cambios sin guardar
               </span>
             )}
           </div>
-          
+
           <div className={styles.formGrid}>
             <div className={styles.formGroup}>
               <label>Nombre del Producto *</label>
               <input
                 type="text"
                 name="name"
-                value={formData.name}
+                value={productForm.name}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Nombre del producto"
                 required
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label>Precio *</label>
+              <label>Precio (CUP) *</label>
               <input
                 type="number"
                 name="price"
-                value={formData.price}
+                value={productForm.price}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Precio"
                 min="0"
                 step="0.01"
                 required
@@ -430,48 +470,70 @@ const ProductManager = () => {
             </div>
 
             <div className={styles.formGroup}>
-              <label>Precio Original *</label>
+              <label>Precio Original (CUP)</label>
               <input
                 type="number"
                 name="originalPrice"
-                value={formData.originalPrice}
+                value={productForm.originalPrice}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Precio original"
                 min="0"
                 step="0.01"
-                required
               />
             </div>
 
             <div className={styles.formGroup}>
               <label>Categoría *</label>
-              <select
+              <input
+                type="text"
                 name="category"
-                value={formData.category}
+                value={productForm.category}
                 onChange={handleInputChange}
-                className="form-select"
+                className="form-input"
+                placeholder="laptop, mobile, tv..."
                 required
-              >
-                <option value="">Seleccionar categoría</option>
-                {categories.filter(cat => !cat.disabled).map(cat => (
-                  <option key={cat._id} value={cat.categoryName}>
-                    {cat.categoryName}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className={styles.formGroup}>
-              <label>Marca *</label>
+              <label>Marca/Compañía *</label>
               <input
                 type="text"
                 name="company"
-                value={formData.company}
+                value={productForm.company}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Marca"
                 required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Stock *</label>
+              <input
+                type="number"
+                name="stock"
+                value={productForm.stock}
+                onChange={handleInputChange}
+                className="form-input"
+                min="0"
+                required
+              />
+              <div className={styles.stockInfo}>
+                📦 Stock total disponible: {productForm.colors.reduce((total, color) => total + (parseInt(color.colorQuantity) || 0), 0)} unidades
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Calificación (1-5)</label>
+              <input
+                type="number"
+                name="stars"
+                value={productForm.stars}
+                onChange={handleInputChange}
+                className="form-input"
+                min="1"
+                max="5"
+                step="0.1"
               />
             </div>
 
@@ -480,40 +542,22 @@ const ProductManager = () => {
               <input
                 type="number"
                 name="reviewCount"
-                value={formData.reviewCount}
+                value={productForm.reviewCount}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Número de reseñas"
                 min="0"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Calificación (1-5)</label>
-              <input
-                type="number"
-                name="stars"
-                value={formData.stars}
-                onChange={handleInputChange}
-                className="form-input"
-                min="1"
-                max="5"
-                step="0.1"
-                placeholder="Calificación"
               />
             </div>
           </div>
 
           <div className={styles.formGroup}>
-            <label>Descripción *</label>
+            <label>Descripción</label>
             <textarea
               name="description"
-              value={formData.description}
+              value={productForm.description}
               onChange={handleInputChange}
               className="form-textarea"
-              placeholder="Descripción del producto"
               rows="4"
-              required
             />
           </div>
 
@@ -529,26 +573,24 @@ const ProductManager = () => {
             <input
               type="url"
               name="image"
-              value={formData.image}
+              value={productForm.image}
               onChange={handleInputChange}
               className="form-input"
               placeholder="https://ejemplo.com/imagen.jpg"
               required
             />
-            {formData.image && (
+            {productForm.image && (
               <div className={styles.imagePreview}>
-                <img src={formData.image} alt="Preview" />
+                <img src={productForm.image} alt="Preview" />
                 <small>Tamaño: 600x450px (igual que los productos actuales)</small>
               </div>
             )}
           </div>
 
+          {/* SECCIÓN DE COLORES */}
           <div className={styles.colorsSection}>
             <label>Colores y Stock por Color *</label>
-            <p className={styles.stockInfo}>
-              <strong>Stock Total Calculado:</strong> {formData.colors.reduce((total, color) => total + parseInt(color.colorQuantity || 0), 0)} unidades
-            </p>
-            {formData.colors.map((color, index) => (
+            {productForm.colors.map((color, index) => (
               <div key={index} className={styles.colorRow}>
                 <input
                   type="color"
@@ -559,127 +601,207 @@ const ProductManager = () => {
                 <input
                   type="number"
                   value={color.colorQuantity}
-                  onChange={(e) => handleColorChange(index, 'colorQuantity', parseInt(e.target.value) || 0)}
+                  onChange={(e) => handleColorChange(index, 'colorQuantity', e.target.value)}
                   className="form-input"
                   placeholder="Cantidad"
                   min="0"
+                  style={{ width: '120px' }}
                 />
-                <button
-                  type="button"
-                  onClick={() => removeColor(index)}
-                  className="btn btn-danger"
-                  disabled={formData.colors.length === 1}
-                >
-                  ❌
-                </button>
+                <span>unidades</span>
+                {productForm.colors.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeColor(index)}
+                    className="btn btn-danger"
+                    style={{ padding: '0.25rem 0.5rem' }}
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
             ))}
             <button
               type="button"
               onClick={addColor}
               className="btn btn-hipster"
+              style={{ marginTop: '0.5rem' }}
             >
-              ➕ Agregar Color
+              + Agregar Color
             </button>
           </div>
 
+          {/* CONFIGURACIÓN DE CARACTERÍSTICAS */}
           <div className={styles.checkboxGroup}>
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
-                name="isShippingAvailable"
-                checked={formData.isShippingAvailable}
+                name="featured"
+                checked={productForm.featured}
                 onChange={handleInputChange}
               />
-              🚚 Envío Disponible (Permite entrega a domicilio)
-              <small className={styles.shippingNote}>
-                ⚡ Los cambios se aplican inmediatamente en el checkout
-              </small>
+              ⭐ Producto Destacado (aparece en la página principal)
             </label>
+
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                name="isShippingAvailable"
+                checked={productForm.isShippingAvailable}
+                onChange={handleInputChange}
+              />
+              🚚 Envío Disponible (permite entrega a domicilio)
+              <span className={styles.shippingNote}>
+                Si está deshabilitado, solo se puede recoger en tienda
+              </span>
+            </label>
+
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
                 name="canUseCoupons"
-                checked={formData.canUseCoupons}
+                checked={productForm.canUseCoupons}
                 onChange={handleInputChange}
               />
               🎫 Puede Usar Cupones de Descuento
-              <small className={styles.couponNote}>
-                ⚡ Los cupones solo se aplicarán si TODOS los productos del carrito tienen esta opción habilitada
-              </small>
+              <span className={styles.couponNote}>
+                Los cupones solo se aplican si TODOS los productos del carrito los permiten
+              </span>
             </label>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                name="featured"
-                checked={formData.featured}
-                onChange={handleInputChange}
-              />
-              ⭐ Producto Destacado
-            </label>
+          </div>
+
+          {/* CONFIGURACIÓN DE MÉTODOS DE PAGO */}
+          <div className={styles.paymentSection}>
+            <h4>💳 Configuración de Métodos de Pago</h4>
+            
+            <div className={styles.paymentGrid}>
+              <div className={styles.formGroup}>
+                <label>Método de Pago Aceptado</label>
+                <select
+                  name="paymentType"
+                  value={productForm.paymentType}
+                  onChange={handleInputChange}
+                  className="form-select"
+                >
+                  <option value="both">💰💳 Efectivo y Transferencia</option>
+                  <option value="cash">💰 Solo Efectivo</option>
+                  <option value="transfer">💳 Solo Transferencia</option>
+                </select>
+              </div>
+
+              {(productForm.paymentType === 'transfer' || productForm.paymentType === 'both') && (
+                <div className={styles.formGroup}>
+                  <label>Recargo por Transferencia (%)</label>
+                  <input
+                    type="number"
+                    name="transferFeePercentage"
+                    value={productForm.transferFeePercentage}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    min="0"
+                    max="20"
+                    step="0.1"
+                  />
+                  <span className={styles.feeNote}>
+                    Recargo aplicado al pagar por transferencia bancaria
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* PREVIEW DE PRECIOS */}
+            <div className={styles.paymentPreview}>
+              <h5>💰 Preview de Precios</h5>
+              <div className={styles.previewGrid}>
+                <div className={styles.previewItem}>
+                  <span className={styles.previewLabel}>💰 Precio en Efectivo:</span>
+                  <span className={styles.previewPrice}>
+                    {formatPriceWithCode(parseFloat(productForm.price) || 0)}
+                  </span>
+                </div>
+                {(productForm.paymentType === 'transfer' || productForm.paymentType === 'both') && (
+                  <div className={styles.previewItem}>
+                    <span className={styles.previewLabel}>💳 Precio con Transferencia:</span>
+                    <span className={styles.previewPrice}>
+                      {formatPriceWithCode(calculateTransferPrice())}
+                      <small>(+{productForm.transferFeePercentage}%)</small>
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className={styles.formActions}>
-            <button onClick={handleSave} className="btn btn-primary">
-              💾 {selectedProduct ? 'Actualizar' : 'Crear'} Producto
+            <button type="submit" className="btn btn-primary">
+              💾 {editingProduct._id ? 'Actualizar' : 'Crear'} Producto
             </button>
-            <button onClick={handleCancel} className="btn btn-danger">
-              ❌ Cancelar
+            <button type="button" onClick={handleCancel} className="btn btn-hipster">
+              Cancelar
             </button>
           </div>
-        </div>
-      ) : (
-        <div className={styles.productList}>
-          <div className={styles.listHeader}>
-            <h3>Productos Existentes ({localProducts.length})</h3>
-            {hasChanges && (
-              <div className={styles.changesAlert}>
-                <span>🟢 Los cambios se han aplicado en tiempo real en la tienda</span>
-                <small>Ve a "🗂️ Sistema Backup" para exportar los cambios</small>
-              </div>
-            )}
-          </div>
-
-          <div className={styles.productGrid}>
-            {localProducts.map(product => (
-              <div key={product._id} className={styles.productCard}>
-                <div className={styles.productImage}>
-                  <img src={product.image} alt={product.name} />
-                </div>
-                <div className={styles.productInfo}>
-                  <h4>{product.name}</h4>
-                  <p className={styles.productPrice}>${product.price.toLocaleString()} CUP</p>
-                  <p className={styles.productStock}>Stock: {product.stock}</p>
-                  <p className={styles.productRating}>⭐ {product.stars} ({product.reviewCount})</p>
-                  <p className={styles.productCategory}>📂 {product.category}</p>
-                  <p className={styles.productCompany}>🏢 {product.company}</p>
-                  <p className={`${styles.productShipping} ${product.isShippingAvailable ? styles.shippingEnabled : styles.shippingDisabled}`}>
-                    🚚 {product.isShippingAvailable ? 'Envío disponible' : 'Sin envío (Solo recogida)'}
-                  </p>
-                  <p className={`${styles.productCoupons} ${product.canUseCoupons !== false ? styles.couponsEnabled : styles.couponsDisabled}`}>
-                    🎫 {product.canUseCoupons !== false ? 'Puede usar cupones' : 'Sin cupones de descuento'}
-                  </p>
-                  {product.featured && <span className={styles.featuredBadge}>⭐ Destacado</span>}
-                </div>
-                <div className={styles.productActions}>
-                  <button
-                    onClick={() => handleEdit(product)}
-                    className="btn btn-primary"
-                  >
-                    ✏️ Editar
-                  </button>
-                  <button
-                    onClick={() => deleteProduct(product._id)}
-                    className="btn btn-danger"
-                  >
-                    🗑️ Eliminar
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        </form>
       )}
+
+      <div className={styles.productList}>
+        <div className={styles.listHeader}>
+          <h3>Productos Existentes ({localProducts.length})</h3>
+          {hasChanges && (
+            <div className={styles.changesAlert}>
+              <span>🟢 Los cambios se han aplicado en tiempo real en la tienda</span>
+              <small>Ve a "🗂️ Sistema Backup" para exportar los cambios</small>
+            </div>
+          )}
+        </div>
+
+        <div className={styles.productGrid}>
+          {localProducts.map(product => (
+            <div key={product._id} className={styles.productCard}>
+              <div className={styles.productImage}>
+                <img src={product.image} alt={product.name} />
+                {product.featured && (
+                  <span className={styles.featuredBadge}>⭐ DESTACADO</span>
+                )}
+              </div>
+              <div className={styles.productInfo}>
+                <h4>{product.name}</h4>
+                <p className={styles.productPrice}>{formatPriceWithCode(product.price)}</p>
+                <p className={styles.productStock}>📦 Stock: {product.stock}</p>
+                <p className={styles.productRating}>⭐ {product.stars} ({product.reviewCount} reseñas)</p>
+                <p className={styles.productCategory}>📂 {product.category}</p>
+                <p className={styles.productCompany}>🏢 {product.company}</p>
+                
+                <div className={`${styles.productShipping} ${product.isShippingAvailable ? styles.shippingEnabled : styles.shippingDisabled}`}>
+                  {product.isShippingAvailable ? '🚚 Envío Disponible' : '🏪 Solo Recogida'}
+                </div>
+                
+                <div className={`${styles.productCoupons} ${product.canUseCoupons ? styles.couponsEnabled : styles.couponsDisabled}`}>
+                  {product.canUseCoupons ? '🎫 Acepta Cupones' : '🚫 Sin Cupones'}
+                </div>
+
+                <div className={`${styles.productPayment} ${styles[`payment${product.paymentType || 'both'}`]}`}>
+                  {(product.paymentType || 'both') === 'cash' ? '💰 Solo Efectivo' : 
+                   (product.paymentType || 'both') === 'transfer' ? '💳 Solo Transferencia' :
+                   '💰💳 Ambos Métodos'}
+                </div>
+              </div>
+              <div className={styles.productActions}>
+                <button
+                  onClick={() => editProduct(product)}
+                  className="btn btn-primary"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => deleteProduct(product._id)}
+                  className="btn btn-danger"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

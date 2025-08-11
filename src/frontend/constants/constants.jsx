@@ -1,5 +1,6 @@
-import { AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
+import { AiFillGithub, AiFillLinkedin, AiOutlineTwitter } from 'react-icons/ai';
 import { MdOutlineFacebook } from 'react-icons/md';
+import { v4 as uuid } from 'uuid';
 
 export const FOOTER_LINKS = [
   {
@@ -108,58 +109,6 @@ export const ALL_STATES = [
 export const SERVICE_TYPES = {
   HOME_DELIVERY: 'home_delivery',
   PICKUP: 'pickup'
-};
-
-// Tipos de pago
-export const PAYMENT_TYPES = {
-  CASH: 'cash',
-  BANK_TRANSFER: 'bank_transfer'
-};
-
-// Recargo por transferencia bancaria
-export const BANK_TRANSFER_SURCHARGE = 20; // 20% adicional
-
-// Función para obtener recargo de transferencia bancaria dinámico
-export const getBankTransferSurcharge = (productCategory = null) => {
-  const savedConfig = localStorage.getItem('adminStoreConfig');
-  
-  if (savedConfig) {
-    try {
-      const parsedConfig = JSON.parse(savedConfig);
-      const bankConfig = parsedConfig.bankTransferConfig;
-      
-      if (bankConfig && bankConfig.isEnabled) {
-        // Si hay una categoría específica y tiene recargo personalizado
-        if (productCategory && bankConfig.categorySpecificSurcharges[productCategory] !== undefined) {
-          return bankConfig.categorySpecificSurcharges[productCategory];
-        }
-        // Si no, usar el recargo por defecto
-        return bankConfig.defaultSurcharge || BANK_TRANSFER_SURCHARGE;
-      }
-    } catch (error) {
-      console.error('Error al cargar configuración de transferencia bancaria:', error);
-    }
-  }
-  
-  // Fallback al valor por defecto
-  return BANK_TRANSFER_SURCHARGE;
-};
-
-// Función para verificar si el sistema de transferencia bancaria está habilitado
-export const isBankTransferEnabled = () => {
-  const savedConfig = localStorage.getItem('adminStoreConfig');
-  
-  if (savedConfig) {
-    try {
-      const parsedConfig = JSON.parse(savedConfig);
-      const bankConfig = parsedConfig.bankTransferConfig;
-      return bankConfig ? bankConfig.isEnabled : true;
-    } catch (error) {
-      console.error('Error al verificar estado de transferencia bancaria:', error);
-    }
-  }
-  
-  return true; // Por defecto habilitado
 };
 
 // Zonas de Santiago de Cuba con costos de entrega - ACTUALIZADAS
@@ -369,7 +318,7 @@ export const CURRENCIES = {
     name: 'Dólar Estadounidense',
     symbol: '$',
     flag: '🇺🇸',
-    rate: 395,
+    rate: 398,
   },
   EUR: {
     code: 'EUR',
@@ -383,8 +332,22 @@ export const CURRENCIES = {
     name: 'Moneda Libremente Convertible',
     symbol: 'MLC',
     flag: '🏦',
-    rate: 220,
+    rate: 210,
   },
 };
 
 export const DEFAULT_CURRENCY = 'CUP';
+
+// TIPOS DE PAGO
+export const PAYMENT_TYPES = {
+  CASH: 'cash',
+  TRANSFER: 'transfer',
+  BOTH: 'both'
+};
+
+// CONFIGURACIÓN DE TRANSFERENCIA BANCARIA
+export const TRANSFER_CONFIG = {
+  DEFAULT_FEE_PERCENTAGE: 5, // 5% por defecto
+  MIN_FEE_PERCENTAGE: 0,
+  MAX_FEE_PERCENTAGE: 20
+};

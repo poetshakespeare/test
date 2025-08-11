@@ -576,3 +576,84 @@ button:disabled {
 .mt-2 {
   margin-top: 2rem;
 }
+
+/* Efecto visual para textos de Yero Shop! */
+.yero-shop-text {
+  background: linear-gradient(45deg, #1e40af, #7c3aed, #0891b2, #059669, #d97706, #dc2626);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: yero-gradient-animation 3s ease-in-out infinite;
+  font-weight: 700;
+}
+
+@keyframes yero-gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Variante más intensa para títulos principales */
+.yero-shop-text-hero {
+  background: linear-gradient(45deg, #1e40af, #7c3aed, #0891b2, #059669, #d97706, #dc2626, #be185d);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: yero-hero-animation 4s ease-in-out infinite;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+@keyframes yero-hero-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Efecto sutil para textos pequeños */
+.yero-shop-text-small {
+  background: linear-gradient(45deg, #1e40af, #7c3aed, #0891b2);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: yero-small-animation 2s ease-in-out infinite;
+  font-weight: 600;
+}
+
+@keyframes yero-small-animation {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Efecto hover para interactividad */
+.yero-shop-text:hover,
+.yero-shop-text-hero:hover,
+.yero-shop-text-small:hover {
+  animation-duration: 1s;
+  transform: scale(1.05);
+}

@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://f005.backblazeb2.com/file/120000/Yero+Shop/lovepik.png" height="300" width="300" alt="logo"/>
 
-# Yero Shop!
+# <span class="yero-shop-text-hero">Yero Shop!</span>
 
 ## La plataforma de comercio detrás de todo
 
@@ -13,12 +13,12 @@
 
 ## **Enlace en vivo :**
 
-[Yero Shop!](https://yeroshop.vercel.app/)
+[<span class="yero-shop-text">Yero Shop!</span>](https://yeroshop.vercel.app/)
 
 ## **DEMO**
 
 <a href="https://yeroshop.vercel.app/>
-    <p>Yero Shop! App 📱 - Watch Video</p>
+    <p><span class="yero-shop-text">Yero Shop!</span> App 📱 - Watch Video</p>
     <img style="max-width:300px;" src="">
   </a>
 
@@ -63,7 +63,7 @@
 ![image]()
 
 ### Home Page
-![Yero Shop!-home](https://f005.backblazeb2.com/file/120000/Yero+Shop/Yero+Shop!-home.png)
+![<span class="yero-shop-text">Yero Shop!</span>-home](https://f005.backblazeb2.com/file/120000/Yero+Shop/Yero+Shop!-home.png)
 
 ### Product Listing Page (DESKTOP)
 ![image](https://f005.backblazeb2.com/file/120000/Yero+Shop/Product+Listing+Page+(DESKTOP).png)

@@ -9,8 +9,9 @@ import CategoryManager from './components/CategoryManager';
 import MessagesManager from './components/MessagesManager';
 import BackupManager from './components/BackupManager';
 import CouponProductManager from './components/CouponProductManager';
-import BankTransferManager from './components/BankTransferManager';
 import styles from './AdminPanel.module.css';
+
+import PaymentConfigManager from './components/PaymentConfigManager';
 
 const AdminPanel = () => {
   const { isAdmin } = useAuthContext();
@@ -23,8 +24,8 @@ const AdminPanel = () => {
   const tabs = [
     { id: 'products', label: '📦 Productos', component: ProductManager },
     { id: 'categories', label: '📂 Categorías', component: CategoryManager },
+    { id: 'payment-config', label: '💳 Métodos de Pago', component: PaymentConfigManager },
     { id: 'coupon-products', label: '🎫 Control Cupones', component: CouponProductManager },
-    { id: 'bank-transfer', label: '🏦 Recargos Transferencia', component: BankTransferManager },
     { id: 'messages', label: '💬 Mensajes', component: MessagesManager },
     { id: 'coupons', label: '🏷️ Cupones', component: CouponManager },
     { id: 'settings', label: '⚙️ Configuración', component: StoreSettings },

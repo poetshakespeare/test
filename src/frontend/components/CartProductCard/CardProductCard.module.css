@@ -105,6 +105,42 @@
   margin: 0.25rem 0;
 }
 
+.paymentInfo {
+  margin: 0.5rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.paymentCash {
+  background: var(--green-light);
+  color: var(--green-dark);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--green-medium);
+}
+
+.paymentTransfer {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #f59e0b;
+}
+
+.paymentBoth {
+  background: linear-gradient(135deg, var(--green-light), #fef3c7);
+  color: var(--grey-800);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--primary-300);
+}
+
 @media screen and (min-width: 768px) {
   .cartItemMain h3 {
     font-size: 1.5rem;
@@ -154,5 +190,12 @@
   .cartBtnContainer {
     justify-content: center;
     font-size: 1.1rem;
+  }
+
+  .paymentCash,
+  .paymentTransfer,
+  .paymentBoth {
+    font-size: 0.85rem;
+    padding: 0.35rem 1rem;
   }
 }

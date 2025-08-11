@@ -42,7 +42,7 @@ const AuthContextProvider = ({ children }) => {
         setIsAdmin(true);
       }
     }
-  }, [user]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, token, isAdmin, updateUserAuth }}>

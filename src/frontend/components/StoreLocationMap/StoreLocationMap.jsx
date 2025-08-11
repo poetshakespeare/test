@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './StoreLocationMap.module.css';
 
 const StoreLocationMap = () => {
@@ -108,7 +108,7 @@ const StoreLocationMap = () => {
       {/* Información de la tienda */}
       <div className={styles.storeInfo}>
         <div className={styles.storeDetails}>
-          <h5>🏪 Yero Shop!</h5>
+          <h5>🏪 <span className="yero-shop-text-small">Yero Shop!</span></h5>
           <p>📍 Santiago de Cuba, Cuba</p>
           <p>📞 WhatsApp: +53 54690878</p>
           <p>🕒 Horarios: Lunes a Domingo</p>

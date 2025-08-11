@@ -204,6 +204,81 @@
   margin-left: 1.5rem;
 }
 
+.paymentSection {
+  margin: 2rem 0;
+  padding: 2rem;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-radius: var(--borderRadius);
+  border: 2px solid #f59e0b;
+}
+
+.paymentSection h4 {
+  margin: 0 0 1.5rem 0;
+  color: #92400e;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.paymentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.feeNote {
+  color: #92400e;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.paymentPreview {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  border: 2px solid #f59e0b;
+}
+
+.paymentPreview h5 {
+  margin: 0 0 1rem 0;
+  color: #92400e;
+  text-align: center;
+}
+
+.previewGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.previewItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--grey-50);
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--grey-200);
+}
+
+.previewLabel {
+  font-weight: 600;
+  color: var(--grey-700);
+}
+
+.previewPrice {
+  font-weight: 700;
+  color: var(--primary-600);
+  font-size: 1.1rem;
+}
+
+.previewPrice small {
+  color: #f59e0b;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
 .formActions {
   display: flex;
   gap: 1rem;
@@ -359,6 +434,32 @@
   background: var(--grey-100);
   color: var(--grey-600);
   border: 1px solid var(--grey-300);
+}
+
+.productPayment {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: var(--borderRadius);
+}
+
+.paymentcash {
+  background: var(--green-light);
+  color: var(--green-dark);
+  border: 1px solid var(--green-medium);
+}
+
+.paymenttransfer {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}
+
+.paymentboth {
+  background: linear-gradient(135deg, var(--green-light), #fef3c7);
+  color: var(--grey-800);
+  border: 1px solid var(--primary-300);
 }
 
 .featuredBadge {

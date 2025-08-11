@@ -122,6 +122,42 @@
   color: var(--green-medium);
 }
 
+.paymentInfo {
+  margin: 0.5rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.paymentCash {
+  background: var(--green-light);
+  color: var(--green-dark);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--green-medium);
+}
+
+.paymentTransfer {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid #f59e0b;
+}
+
+.paymentBoth {
+  background: linear-gradient(135deg, var(--green-light), #fef3c7);
+  color: var(--grey-800);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--primary-300);
+}
+
 .colorsContainer,
 .colorsContainerDefault {
   margin-top: 0.5rem;
@@ -257,57 +293,5 @@
 
   .skeletonImg {
     height: 15rem;
-  }
-
-  .bankTransferBadge {
-    font-size: 0.85rem;
-    padding: 0.6rem 1rem;
-  }
-
-  .bankIcon {
-    font-size: 1.1rem;
-  }
-
-  .bankText {
-    font-size: 0.85rem;
-  }
-}
-
-.bankTransferBadge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  border: 1px solid #f59e0b;
-  border-radius: var(--borderRadius);
-  padding: 0.5rem 0.75rem;
-  margin: 0.5rem 0;
-  font-size: 0.8rem;
-  color: #92400e;
-  font-weight: 600;
-}
-
-.bankIcon {
-  font-size: 1rem;
-}
-
-.bankText {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-@media screen and (min-width: 768px) {
-  .bankTransferBadge {
-    font-size: 0.85rem;
-    padding: 0.6rem 1rem;
-  }
-
-  .bankIcon {
-    font-size: 1.1rem;
-  }
-
-  .bankText {
-    font-size: 0.85rem;
   }
 }

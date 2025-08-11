@@ -14,7 +14,7 @@ const Hero = () => {
           <h1>La plataforma de comercio detrás de todo</h1>
 
           <p>
-            ¡Bienvenido a Yero Shop! Vende online y en persona. Vende a nivel local y mundial.
+            ¡Bienvenido a <span className="yero-shop-text-hero">Yero Shop!</span> Vende online y en persona. Vende a nivel local y mundial.
           </p>
 
           <Link to='/products' className={`btn ${styles.btnHero}`}>
