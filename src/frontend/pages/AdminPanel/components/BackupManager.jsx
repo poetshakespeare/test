@@ -540,19 +540,19 @@ export const STORE_MESSAGES = ${JSON.stringify(messages, null, 2)};
           <div className={styles.step}>
             <span className={styles.stepNumber}>2</span>
             <div className={styles.stepContent}>
-              <strong>Verificar cambios:</strong> Los cambios se aplican automáticamente en la tienda en tiempo real con imágenes responsivas.
+              <strong>Verificar sincronización:</strong> Los cambios se sincronizan automáticamente entre todas las secciones del panel y se aplican en tiempo real en la tienda.
             </div>
           </div>
           <div className={styles.step}>
             <span className={styles.stepNumber}>3</span>
             <div className={styles.stepContent}>
-              <strong>Exportar backup:</strong> Haz clic en "Exportar Backup Completo" para generar los archivos actualizados con estructura exacta.
+              <strong>Exportar backup:</strong> Haz clic en "Exportar Backup Completo" para generar los archivos actualizados con sincronización completa.
             </div>
           </div>
           <div className={styles.step}>
             <span className={styles.stepNumber}>4</span>
             <div className={styles.stepContent}>
-              <strong>Aplicar cambios:</strong> Extrae los archivos del ZIP y reemplaza los archivos correspondientes en tu proyecto manteniendo la estructura.
+              <strong>Aplicar cambios:</strong> Extrae los archivos del ZIP y reemplaza los archivos correspondientes en tu proyecto. Todos los cambios están sincronizados.
             </div>
           </div>
         </div>
